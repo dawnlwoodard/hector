@@ -30,6 +30,8 @@ SimpleNbox::SimpleNbox() : CarbonCycleModel( 6 ), masstot(0.0) {
     ffiEmissions.name = "ffiEmissions";
     lucEmissions.allowInterp( true );
     lucEmissions.name = "lucEmissions";
+    exoEmissions.allowInterp( true );
+    exoEmissions.name = "exoEmissions";
     Ftalbedo.allowInterp( true );
     Ftalbedo.name = "albedo";
     
@@ -67,6 +69,7 @@ void SimpleNbox::init( Core* coreptr ) {
     // Register the inputs we can receive from outside
     core->registerInput(D_FFI_EMISSIONS, getComponentName());
     core->registerInput(D_LUC_EMISSIONS, getComponentName());
+    core->registerInput(D_EXO_EMISSIONS, getComponentName());
     core->registerInput(D_PREINDUSTRIAL_CO2, getComponentName()); 
     core->registerInput(D_BETA, getComponentName());
     core->registerInput(D_Q10_RH, getComponentName());
@@ -196,6 +199,12 @@ void SimpleNbox::setData( const std::string &varName,
         else if( varNameParsed == D_LUC_EMISSIONS ) {
             H_ASSERT( data.date != Core::undefinedIndex(), "date required" );
             lucEmissions.set( data.date, data.getUnitval( U_PGC_YR ) );
+        } 
+        // Other "exogenous" emissions time series.
+        else if( varNameParsed == D_EXO_EMISSIONS ) {
+            H_ASSERT( data.date != Core::undefinedIndex(), "date required" );
+            H_ASSERT( biome == SNBOX_DEFAULT_BIOME, "exogenous emissions must be global" );
+            exoEmissions.set( data.date, data.getUnitval( U_PGC_YR ) );
         } 
         // Atmospheric CO2 record to constrain model to (optional)
         else if( varNameParsed == D_CA_CONSTRAIN ) {
@@ -463,6 +472,9 @@ unitval SimpleNbox::getData(const std::string& varName,
     } else if( varName == D_LUC_EMISSIONS ) {
         H_ASSERT( date != Core::undefinedIndex(), "Date required for luc emissions" );
         returnval = lucEmissions.get( date );
+    } else if( varName == D_EXO_EMISSIONS ) {
+        H_ASSERT( date != Core::undefinedIndex(), "Date required for exo emissions" );
+        returnval = exoEmissions.get( date );
     } else if( varName == D_NPP ) {
         H_ASSERT( date == Core::undefinedIndex(), "Date not allowed for npp" );
         returnval = sum_npp();
@@ -792,11 +804,18 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
     
     // Oxidized methane of fossil fuel origin
     unitval ch4ox_current( 0.0, U_PGC_YR );     //TODO: implement this
+
+    // Additional exogenous CO2 flux
+    unitval exo_flux_current( 0.0, U_PGC_YR );
+    if ( !in_spinup ) {
+      exo_flux_current = exoEmissions.get( t );
+    }
     
     // Compute fluxes
     dcdt[ SNBOX_ATMOS ] = // change in atmosphere pool
         ffi_flux_current.value( U_PGC_YR )
         + luc_current.value( U_PGC_YR )
+        + exo_flux_current.value( U_PGC_YR )
         + ch4ox_current.value( U_PGC_YR )
         - atmosocean_flux.value( U_PGC_YR )
         - npp_current.value( U_PGC_YR )
@@ -820,7 +839,8 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
     dcdt[ SNBOX_OCEAN ] = // change in ocean pool
         atmosocean_flux.value( U_PGC_YR );
     dcdt[ SNBOX_EARTH ] = // change in earth pool
-        - ffi_flux_current.value( U_PGC_YR );
+        - ffi_flux_current.value( U_PGC_YR )
+        - exo_flux_current.value( U_PGC_YR );
 
 /*    printf( "%6.3f%8.3f%8.2f%8.2f%8.2f%8.2f%8.2f\n", t, dcdt[ SNBOX_ATMOS ],
             dcdt[ SNBOX_VEG ], dcdt[ SNBOX_DET ], dcdt[ SNBOX_SOIL ], dcdt[ SNBOX_OCEAN ], dcdt[ SNBOX_EARTH ] );

@@ -210,6 +210,7 @@
 #define D_SOILC                 "soil_c"
 #define D_FFI_EMISSIONS         "ffi_emissions"
 #define D_LUC_EMISSIONS         "luc_emissions"
+#define D_EXO_EMISSIONS         "exo_emissions"
 #define D_CO2FERT               "co2fert"
 #define D_TEMPFERTD              "detritus_tempfert"
 #define D_TEMPFERTS              "soil_tempfert"
