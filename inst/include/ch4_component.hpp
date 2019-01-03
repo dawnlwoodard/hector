@@ -59,6 +59,7 @@ public:
                             const double date ) throw ( h_exception );   
      //! emissions time series
     tseries<unitval> CH4_emissions;
+    tseries<unitval> exoCH4Emissions;   //!< additional exogenous methane emissions, Tg CH4/yr
     tseries<unitval> CH4;  // CH4 concentrations, ppbv CH4
     unitval M0;     // preindustrial methane, ppbv CH4
     unitval UC_CH4;  // conversion factor between emissions and concentration

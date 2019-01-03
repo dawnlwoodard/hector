@@ -122,3 +122,48 @@ test_that("Setting emissions changes results", {
 
     hc <- shutdown(hc)
 })
+
+test_that("Setting exogenous CO2 emissions changes results", {
+  hc <- newcore(file.path(inputdir, "hector_rcp45.ini"), suppresslogging = TRUE)
+  run(hc, 2100)
+
+  outdata1a <- fetchvars(hc, 2000:2089, c(ATMOSPHERIC_CO2(), RF_TOTAL()))
+  outdata1b <- fetchvars(hc, 2091:2100, c(ATMOSPHERIC_CO2(), RF_TOTAL()))
+  reset(hc, 2000)
+
+  ## Introduce new CO2 emissions
+  setvar(hc, 2089, "exo_emissions", 0, "Pg C/yr")
+  setvar(hc, 2090, "exo_emissions", 10.0, "Pg C/yr")
+  run(hc, 2100)
+
+  outdata2a <- fetchvars(hc, 2000:2089, c(ATMOSPHERIC_CO2(), RF_TOTAL()))
+  outdata2b <- fetchvars(hc, 2091:2100, c(ATMOSPHERIC_CO2(), RF_TOTAL()))
+
+  expect_equal(outdata1a, outdata2a)
+  expect_true(all(outdata2b$value > outdata1b$value))
+
+  hc <- shutdown(hc)
+})
+
+test_that("Setting exogenous CH4 emissions changes results", {
+  hc <- newcore(file.path(inputdir, "hector_rcp45.ini"), suppresslogging = TRUE)
+  run(hc, 2100)
+
+  outdata1a <- fetchvars(hc, 2000:2089, c("CH4", RF_TOTAL()))
+  outdata1b <- fetchvars(hc, 2091:2100, c("CH4", RF_TOTAL()))
+  reset(hc, 2000)
+
+  ## Introduce new CO2 emissions
+  setvar(hc, 2089, "exo_ch4_emissions", 0, "Tg CH4")
+  setvar(hc, 2090, "exo_ch4_emissions", 500.0, "Tg CH4")
+  fetchvars(hc, 2000:2100, "exo_ch4_emissions")
+  run(hc, 2100)
+
+  outdata2a <- fetchvars(hc, 2000:2089, c("CH4", RF_TOTAL()))
+  outdata2b <- fetchvars(hc, 2091:2100, c("CH4", RF_TOTAL()))
+
+  expect_equal(outdata1a, outdata2a)
+  expect_true(all(outdata2b$value > outdata1b$value))
+
+  hc <- shutdown(hc)
+})

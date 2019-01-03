@@ -30,6 +30,8 @@ CH4Component::CH4Component() {
     CH4_emissions.name = CH4_COMPONENT_NAME; 
     CH4.allowInterp( true );
     CH4.name = D_ATMOSPHERIC_CH4;
+    exoCH4Emissions.allowInterp( true );
+    exoCH4Emissions.name = "exoCH4Emissions";
 }
 
 //------------------------------------------------------------------------------
@@ -59,6 +61,7 @@ void CH4Component::init( Core* coreptr ) {
     core->registerDependency( D_LIFETIME_OH, getComponentName() ); 
     // ...and what input data that we can accept
     core->registerInput(D_EMISSIONS_CH4, getComponentName());
+    core->registerInput(D_EXO_CH4_EMISSIONS, getComponentName());
 }
 
 //------------------------------------------------------------------------------
@@ -95,7 +98,10 @@ void CH4Component::setData( const string& varName,
          } else if( varName == D_EMISSIONS_CH4 ) {
             H_ASSERT( data.date != Core::undefinedIndex(), "date required" );
             CH4_emissions.set(data.date, data.getUnitval( U_TG_CH4 ));
-        } else if( varName == D_LIFETIME_SOIL ) {
+         } else if( varName == D_EXO_CH4_EMISSIONS ) {
+            H_ASSERT( data.date != Core::undefinedIndex(), "date required" );
+            exoCH4Emissions.set(data.date, data.getUnitval( U_TG_CH4 ));
+         } else if( varName == D_LIFETIME_SOIL ) {
             H_ASSERT( data.date == Core::undefinedIndex() , "date not allowed" );
             Tsoil = data.getUnitval( U_YRS );
          } else if( varName == D_LIFETIME_STRAT ) {
@@ -134,11 +140,12 @@ void CH4Component::run( const double runToDate ) throw ( h_exception ) {
     // modified from Wigley et al, 2002
     // https://doi.org/10.1175/1520-0442(2002)015%3C2690:RFDTRG%3E2.0.CO;2
     const double current_ch4em = CH4_emissions.get( runToDate ).value( U_TG_CH4 );
+    const double current_ch4em_exo = exoCH4Emissions.get( runToDate ).value( U_TG_CH4 );
     const double current_toh = core->sendMessage( M_GETDATA, D_LIFETIME_OH, runToDate ).value( U_YRS );
     H_LOG( logger, Logger::DEBUG ) << "Year " << runToDate << " current_toh = " << current_toh << std::endl;
    
     const double ch4n =  CH4N.value( U_TG_CH4 );
-    const double emisTocon = ( current_ch4em + ch4n ) / UC_CH4.value( U_TG_PPBV );
+    const double emisTocon = ( current_ch4em + ch4n + current_ch4em_exo ) / UC_CH4.value( U_TG_PPBV );
     double previous_ch4 = M0.value( U_PPBV_CH4 );
      
     H_LOG( logger, Logger::DEBUG ) << "Year " << runToDate << " previous CH4 = " << previous_ch4 << std::endl;
@@ -172,6 +179,9 @@ unitval CH4Component::getData( const std::string& varName,
     } else if( varName == D_PREINDUSTRIAL_CH4 ) {
         H_ASSERT( date == Core::undefinedIndex(), "Date not allowed for preindustrial CH4" );
         returnval = M0;
+    } else if( varName == D_EXO_CH4_EMISSIONS ) {    
+        H_ASSERT( date != Core::undefinedIndex(), "Date required for exogenous CH4 emissions" );
+        returnval = exoCH4Emissions.get( date );
     } else {
         H_THROW( "Caller is requesting unknown variable: " + varName );
     }
