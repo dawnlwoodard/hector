@@ -1,0 +1,11 @@
+---
+title: "Read, write, and modify the Hector INI file"
+author: Alexey Shiklomanov
+date: 2019-01-18
+vignette: >
+  %\VignetteIndexEntry{Hector INI file}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette provides an overview of the Hector INI file, and introduces some R functions for working with it.
