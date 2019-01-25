@@ -71,13 +71,6 @@ matrix:
 
 
     - language: r
-      addons: 
-        apt: 
-          packages: 
-            - libboost-system1.55-dev
-            - libboost-filesystem1.55-dev
-          sources: 
-            - boost-latest
       cache: packages
       r_binary_packages:
         - devtools
