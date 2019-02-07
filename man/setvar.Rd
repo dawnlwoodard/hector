@@ -25,8 +25,14 @@ a single string (heterogeneous units are not supported).  These are checked
 against the expected unit in the code, and an error is signaled if they don't
 match (i.e., there is no attempt to convert units).
 }
+\details{
+This function can be used to set both parameters and state
+variables. However, the wrapper function \code{\link[=set_param]{set_param()}} provides a
+more convenient wrapper for setting parameter values.
+}
 \seealso{
 Other main user interface functions: \code{\link{fetchvars}},
   \code{\link{newcore}}, \code{\link{reset}},
   \code{\link{run}}, \code{\link{shutdown}}
 }
+\concept{main user interface functions}

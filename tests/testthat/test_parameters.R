@@ -27,8 +27,7 @@ test_that('Lowering initial CO2 lowers output CO2', {
     dd1 <- fetchvars(hc, dates, ATMOSPHERIC_CO2())
 
     ## Change the preindustrial CO2
-    setvar(hc, NA, PREINDUSTRIAL_CO2(), 250, "ppmv CO2")
-    reset(hc, 0.0)
+    set_param(hc, PREINDUSTRIAL_CO2(), 250, "ppmv CO2")
     run(hc, 2100)
     dd2 <- fetchvars(hc, dates, ATMOSPHERIC_CO2())
 
@@ -50,8 +49,7 @@ test_that('Lowering ECS lowers output Temperature', {
     tdates <- 2000:2100
     dd1 <- fetchvars(hc, tdates, GLOBAL_TEMP())
 
-    setvar(hc, NA, ECS(), 2.5, 'degC')
-    reset(hc, 0.0)
+    set_param(hc, ECS(), 2.5, 'degC')
     run(hc, 2100)
     dd2 <- fetchvars(hc, tdates, GLOBAL_TEMP())
 
@@ -70,8 +68,7 @@ test_that('Raising Q10 increases CO2 concentration', {
     dd1 <- fetchvars(hc, qdates, ATMOSPHERIC_CO2())
 
     ## Change the preindustrial CO2
-    setvar(hc, NA, Q10_RH(), 2.5, NA)
-    reset(hc, 0.0)
+    set_param(hc, Q10_RH(), 2.5, NA)
     run(hc, 2100)
     dd2 <- fetchvars(hc, qdates, ATMOSPHERIC_CO2())
 
@@ -90,8 +87,7 @@ test_that('Lowering diffusivity increases temperature', {
     dd1 <- fetchvars(hc, qdates, GLOBAL_TEMP())
 
     ## Change the diffusivity
-    setvar(hc, NA, DIFFUSIVITY(), 2.0, "cm2/s")
-    reset(hc, 0.0)
+    set_param(hc, DIFFUSIVITY(), 2.0, "cm2/s")
     run(hc, 2100)
     dd2 <- fetchvars(hc, qdates, GLOBAL_TEMP())
 
@@ -112,8 +108,7 @@ test_that('Lowering aerosol scaling factor increases temperature',
     dd1 <- fetchvars(hc, qdates, GLOBAL_TEMP())
 
     ## Change the aerosol scaling factor
-    setvar(hc, NA, AERO_SCALE(), 0.5, NA)
-    reset(hc, 0.0)
+    set_param(hc, AERO_SCALE(), 0.5, NA)
     run(hc, 2100)
     dd2 <- fetchvars(hc, qdates, GLOBAL_TEMP())
 

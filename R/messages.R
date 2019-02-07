@@ -68,6 +68,10 @@ fetchvars <- function(core, dates, vars=NULL, scenario=NULL)
 #' against the expected unit in the code, and an error is signaled if they don't
 #' match (i.e., there is no attempt to convert units).
 #'
+#' This function can be used to set both parameters and state
+#' variables. However, the wrapper function [set_param()] provides a
+#' more convenient wrapper for setting parameter values.
+#'
 #' @param core Hector core object
 #' @param dates Vector of dates
 #' @param var Capability string for the variable to set
