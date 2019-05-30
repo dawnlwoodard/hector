@@ -613,12 +613,18 @@ void SimpleNbox::accept( AVisitor* visitor ) {
  */
 void SimpleNbox::getCValues( double t, double c[] )
 {
+    H_LOG( logger, Logger::DEBUG ) << "Setting values at time " << t << std::endl;
     c[ SNBOX_ATMOS ] = atmos_c.value( U_PGC );
+    H_LOG( logger, Logger::DEBUG ) << "Set c[SNBOX_ATMOS] to " << c[SNBOX_ATMOS] << std::endl;
     c[ SNBOX_VEG ] = sum_map( veg_c ).value( U_PGC );
+    H_LOG( logger, Logger::DEBUG ) << "Set c[SNBOX_VEG] to " << c[SNBOX_VEG] << std::endl;
     c[ SNBOX_DET ] = sum_map( detritus_c ).value( U_PGC );
+    H_LOG( logger, Logger::DEBUG ) << "Set c[SNBOX_DET] to " << c[SNBOX_DET] << std::endl;
     c[ SNBOX_SOIL ] = sum_map( soil_c ).value( U_PGC );
+    H_LOG( logger, Logger::DEBUG ) << "Set c[SNBOX_SOIL] to " << c[SNBOX_SOIL] << std::endl;
     omodel->getCValues( t, c );
     c[ SNBOX_EARTH ] = earth_c.value( U_PGC );
+    H_LOG( logger, Logger::DEBUG ) << "Set c[SNBOX_EARTH] to " << c[SNBOX_EARTH] << std::endl;
     
     ODEstartdate = t;
 }
@@ -684,6 +690,7 @@ void SimpleNbox::stashCValues( double t, const double c[] )
     // Each time the model pools are updated, check that mass has been conserved
     double sum=0.0;
     for( int i=0; i<ncpool(); i++ ) {
+      H_LOG( logger, Logger::DEBUG ) << "Pool " << i << " has value " << c[i] << std::endl;
         sum += c[ i ];
     }
 
