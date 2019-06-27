@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Identifiers for variables in the Hector carbon cycle component — carboncycle • hector</title>
+<title>Create new biome — create_biome • hector</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,10 +30,9 @@
 
 
 
-<meta property="og:title" content="Identifiers for variables in the Hector carbon cycle component — carboncycle" />
+<meta property="og:title" content="Create new biome — create_biome" />
 
-<meta property="og:description" content="These identifiers correspond to variables that can be read and/or set in the
-carbon cycle" />
+<meta property="og:description" content="Create new biome" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -118,93 +117,61 @@ carbon cycle" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Identifiers for variables in the Hector carbon cycle component</h1>
+    <h1>Create new biome</h1>
     
-    <div class="hidden name"><code>carboncycle.Rd</code></div>
+    <div class="hidden name"><code>create_biome.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>These identifiers correspond to variables that can be read and/or set in the
-carbon cycle</p>
+    <p>Create new biome</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>LAND_CFLUX</span>()
-
-<span class='fu'>ATMOSPHERIC_CO2</span>()
-
-<span class='fu'>ATMOSPHERIC_C</span>()
-
-<span class='fu'>FFI_EMISSIONS</span>()
-
-<span class='fu'>LUC_EMISSIONS</span>()
-
-<span class='fu'>VEG_C</span>(<span class='kw'>biome</span> <span class='kw'>=</span> <span class='st'>""</span>)
-
-<span class='fu'>DETRITUS_C</span>(<span class='kw'>biome</span> <span class='kw'>=</span> <span class='st'>""</span>)
-
-<span class='fu'>SOIL_C</span>(<span class='kw'>biome</span> <span class='kw'>=</span> <span class='st'>""</span>)
-
-<span class='fu'>NPP_FLUX0</span>(<span class='kw'>biome</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
+    <pre class="usage"><span class='fu'>create_biome</span>(<span class='no'>core</span>, <span class='no'>biome</span>, <span class='kw'>veg_c0</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>detritus_c0</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>soil_c0</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>npp_flux0</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>warmingfactor</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>beta</span> <span class='kw'>=</span> <span class='fl'>0.36</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>core</th>
+      <td><p>Hector core</p></td>
+    </tr>
+    <tr>
       <th>biome</th>
-      <td><p>Biome for which to retrieve parameter. If missing or
-`""`, default to `"global"`.</p></td>
+      <td><p>Name of new biome</p></td>
+    </tr>
+    <tr>
+      <th>veg_c0</th>
+      <td><p>Initial vegetation C pool (default = `0`)</p></td>
+    </tr>
+    <tr>
+      <th>detritus_c0</th>
+      <td><p>Initial detritus C pool (default = `0`)</p></td>
+    </tr>
+    <tr>
+      <th>soil_c0</th>
+      <td><p>Initial soil C pool (default = `0`)</p></td>
+    </tr>
+    <tr>
+      <th>npp_flux0</th>
+      <td><p>Initial net primary productivity (default = `0`)</p></td>
+    </tr>
+    <tr>
+      <th>warmingfactor</th>
+      <td><p>Temperature multiplier (default =
+`1.0`)</p></td>
+    </tr>
+    <tr>
+      <th>beta</th>
+      <td><p>CO2 fertilization effect (default = `0.36`)</p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <ul>
-<li><p><code>VEG_C</code>: Vegetation C pool (`"Pg C"`)</p></li>
-<li><p><code>DETRITUS_C</code>: Vegetation detritus C pool (`"Pg C"`)</p></li>
-<li><p><code>SOIL_C</code>: Soil C pool (`"Pg C"`)</p></li>
-<li><p><code>NPP_FLUX0</code>: Initial net primary productivity (NPP)
-flux (`"Pg C year^-1"`)</p></li>
-</ul>
-    
-    <h2 class="hasAnchor" id="output-variables"><a class="anchor" href="#output-variables"></a>Output variables</h2>
-
-    
-    <p>These variables can be read using the <code><a href='msgtype.html'>GETDATA</a></code> message type:</p><dl class='dl-horizontal'>
-<dt>ATMOSPHERIC_CO2</dt><dd><p>Atmospheric CO2 concentration</p></dd>
-<dt>ATMOSPHERIC_C</dt><dd><p>Atmospheric carbon pool</p></dd>
-<dt>LAND_CFLUX</dt><dd><p>Land carbon flux</p></dd>
-<dt>FFI_EMISSIONS</dt><dd><p>Fossil fuel and industrial emissions</p></dd>
-<dt>LUC_EMISSIONS</dt><dd><p>Land use change emissions</p></dd>
-</dl>
-    
-    <h2 class="hasAnchor" id="input-variables"><a class="anchor" href="#input-variables"></a>Input variables</h2>
-
-    
-    <dl class='dl-horizontal'>
-<dt>FFI_EMISSIONS</dt><dd><p>Fossil fuel and industrial emissions (<code>"Pg C/yr"</code>)</p></dd>
-<dt>LUC_EMISSIONS</dt><dd><p>Land use change emissions (<code>"Pg C/yr"</code>)</p></dd>
-</dl>
-    
-    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
-
-    
-    <p>Because these identifiers are provided as <code>#define</code> macros in the hector code,
-these identifiers are provided in the R interface as function.  Therefore,
-these objects must be called to use them; <em>e.g.</em>, <code><a href='msgtype.html'>GETDATA()</a></code>
-instead of the more natural looking <code>GETDATA</code>.</p>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><a href='concentrations.html'>concentrations</a> for other gas concentrations and
-<a href='emissions.html'>emissions</a> for other gas emissions</p>
-<p>Other capability identifiers: <code><a href='concentrations.html'>concentrations</a></code>,
-  <code><a href='emissions.html'>emissions</a></code>, <code><a href='forcings.html'>forcings</a></code>,
-  <code><a href='haloemiss.html'>haloemiss</a></code>, <code><a href='haloforcings.html'>haloforcings</a></code>,
-  <code><a href='methane.html'>methane</a></code>, <code><a href='ocean.html'>ocean</a></code>,
-  <code><a href='parameters.html'>parameters</a></code>, <code><a href='so2.html'>so2</a></code>,
-  <code><a href='temperature.html'>temperature</a></code></p></div>
+    <p>Hector core, invisibly</p>
     
 
   </div>
@@ -213,17 +180,11 @@ instead of the more natural looking <code>GETDATA</code>.</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#functions">Functions</a></li>
-
-      <li><a href="#output-variables">Output variables</a></li>
-
-      <li><a href="#input-variables">Input variables</a></li>
-
-      <li><a href="#note">Note</a></li>
-
-      <li><a href="#see-also">See also</a></li>
+      <li><a href="#value">Value</a></li>
           </ul>
 
+    <h2>Author</h2>
+    <p>Alexey Shiklomanov</p>
   </div>
 </div>
 

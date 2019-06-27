@@ -1,4 +1,4 @@
-pandoc: 2.7.2
+pandoc: 2.7.3
 pkgdown: 1.3.0
 pkgdown_sha: ~
 articles:
@@ -16,4 +16,5 @@ articles:
   Unitvals: manual/Unitvals.html
   VersionNumbers: manual/VersionNumbers.html
   index: manual/index.html
+  multiple-biomes: multiple-biomes.html
 

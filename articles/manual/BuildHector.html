@@ -98,24 +98,24 @@
 <a href="#installing-and-building---r-package" class="anchor"></a>Installing and building - R package</h1>
 <p>The easiest way to install and use Hector is as an R package. To install R, follow the <a href="https://cloud.r-project.org/">official instructions</a> for your platform.</p>
 <p>To install the version associated with the current <code>master</code> git branch on GitHub, use the <code><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">devtools::install_github</a></code> function. This will automatically install all of Hector’s dependencies as well. (Note that because this requires compiling from source, you will need to have a C compiler installed and configured. On <strong>Windows</strong>, you will also need to install <a href="https://cloud.r-project.org/bin/windows/Rtools/">Rtools</a>. On <strong>MacOS</strong> and <strong>Linux</strong>, the required tools should be included as part of a standard R installation.)</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="co"># If the `devtools` isn't installed, first run:</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="co"># install.packages("devtools")</span></a>
-<a class="sourceLine" id="cb1-3" title="3">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jgcri/hector"</span>)</a>
-<a class="sourceLine" id="cb1-4" title="4"></a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="co"># You can also install from specific git tags...</span></a>
-<a class="sourceLine" id="cb1-6" title="6">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jgcri/hector@2.2.2"</span>)</a>
-<a class="sourceLine" id="cb1-7" title="7"><span class="co"># ...branches...</span></a>
-<a class="sourceLine" id="cb1-8" title="8">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jgcri/hector@krd-perscribe_co2Con"</span>)</a>
-<a class="sourceLine" id="cb1-9" title="9"><span class="co"># ...or commit hashes.</span></a>
-<a class="sourceLine" id="cb1-10" title="10">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jgcri/hector@16c480a"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># If the `devtools` isn't installed, first run:</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="co"># install.packages("devtools")</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jgcri/hector"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="co"># You can also install from specific git tags...</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jgcri/hector@2.2.2"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="co"># ...branches...</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jgcri/hector@krd-perscribe_co2Con"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="co"># ...or commit hashes.</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a>devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"jgcri/hector@16c480a"</span>)</span></code></pre></div>
 <p>Finally, to install from a local copy of the source code, you can use the following code:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/install">install</a></span>(<span class="st">"/path/to/hector"</span>)</a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="co"># For the current directory, use `"."` or run the function with no arguments.</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/install">install</a></span>(<span class="st">"/path/to/hector"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="co"># For the current directory, use `"."` or run the function with no arguments.</span></span></code></pre></div>
 <p>…or, if you are using the <a href="https://www.rstudio.com/products/rstudio/">RStudio IDE</a>, use the “Install and Restart”, “Clean and Rebuild”, and similar tools in the “Build” tab.</p>
 <p>Although very common and broadly useful, the <code>devtools</code> package has many R package dependencies, including some with system dependencies. If you do not want to install <code>devtools</code>, you can also install from a local copy by using the base-R <code>install.packages</code> function as follows:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"/path/to/hector"</span>, <span class="dt">repos =</span> <span class="ot">NULL</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"/path/to/hector"</span>, <span class="dt">repos =</span> <span class="ot">NULL</span>)</span></code></pre></div>
 <p>…or by running the following shell command:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1"><span class="ex">R</span> CMD INSTALL /path/to/hector</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="ex">R</span> CMD INSTALL /path/to/hector</span></code></pre></div>
 <p>However, note that neither of these commands will automatically install Hector’s dependencies, so you will have to install them manually. Hector’s mandatory dependencies are listed in the <code>DESCRIPTION</code> file under <code>Imports</code>, and are currently as follows:</p>
 <ul>
 <li>
