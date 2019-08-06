@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Retrieve the initial conditions and parameters for a given biome — get_biome_inits • hector</title>
+<title>Create a biome — create_biome_impl • hector</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Retrieve the initial conditions and parameters for a given biome — get_biome_inits" />
+<meta property="og:title" content="Create a biome — create_biome_impl" />
 
-<meta property="og:description" content="Internal helper function for biome functions." />
+<meta property="og:description" content="Create a biome" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -120,35 +120,31 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Retrieve the initial conditions and parameters for a given biome</h1>
+    <h1>Create a biome</h1>
     
-    <div class="hidden name"><code>get_biome_inits.Rd</code></div>
+    <div class="hidden name"><code>create_biome_impl.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Internal helper function for biome functions.</p>
+    <p>Create a biome</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>get_biome_inits</span>(<span class='no'>core</span>, <span class='no'>biome</span>)</pre>
+    <pre class="usage"><span class='fu'>create_biome_impl</span>(<span class='no'>core</span>, <span class='no'>biome</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>core</th>
-      <td><p>Hector core</p></td>
+      <td><p>Handle to the Hector instance that is to be run.</p></td>
     </tr>
     <tr>
       <th>biome</th>
-      <td><p>Name of biome for which to retrieve data</p></td>
+      <td><p>(character) Name of new biome</p></td>
     </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>Named numeric vector of biome initial conditions and parameters</p>
     
 
   </div>
@@ -156,12 +152,8 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-          </ul>
+                </ul>
 
-    <h2>Author</h2>
-    <p>Alexey Shiklomanov</p>
   </div>
 </div>
 
