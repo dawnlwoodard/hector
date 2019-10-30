@@ -171,7 +171,31 @@ void Core::init() {
     modelComponents[ temp->getComponentName() ] = temp;
     temp = new HalocarbonComponent( CH3Br_COMPONENT_BASE );
     modelComponents[ temp->getComponentName() ] = temp;
-    
+    temp = new HalocarbonComponent( C4F10_COMPONENT_BASE );
+    modelComponents[ temp->getComponentName() ] = temp;
+    temp = new HalocarbonComponent( C6F14_COMPONENT_BASE );
+    modelComponents[ temp->getComponentName() ] = temp;
+    temp = new HalocarbonComponent( C7F16_COMPONENT_BASE );
+    modelComponents[ temp->getComponentName() ] = temp;
+    temp = new HalocarbonComponent( C8F18_COMPONENT_BASE );
+    modelComponents[ temp->getComponentName() ] = temp;
+    temp = new HalocarbonComponent( HFC4310mee_COMPONENT_BASE );
+    modelComponents[ temp->getComponentName() ] = temp;
+    temp = new HalocarbonComponent( HFC152a_COMPONENT_BASE );
+    modelComponents[ temp->getComponentName() ] = temp;
+    temp = new HalocarbonComponent( HFC236fa_COMPONENT_BASE );
+    modelComponents[ temp->getComponentName() ] = temp;
+    temp = new HalocarbonComponent( NF3_COMPONENT_BASE );
+    modelComponents[ temp->getComponentName() ] = temp;
+    temp = new HalocarbonComponent( C3F8_COMPONENT_BASE );
+    modelComponents[ temp->getComponentName() ] = temp;
+    temp = new HalocarbonComponent( HFC365mfc_COMPONENT_BASE );
+    modelComponents[ temp->getComponentName() ] = temp;
+    temp = new HalocarbonComponent( SO2F2_COMPONENT_BASE );
+    modelComponents[ temp->getComponentName() ] = temp;
+    temp = new HalocarbonComponent( cC4F8_COMPONENT_BASE );
+    modelComponents[ temp->getComponentName() ] = temp;
+
     temp = new BlackCarbonComponent();
     modelComponents[ temp->getComponentName() ] = temp;
     temp = new OrganicCarbonComponent();
