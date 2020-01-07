@@ -1009,6 +1009,22 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
 
     // As permafrost thaws, the C is mobilized into the soil pool.
     unitval permafrost_thaw_c( 0.0, U_PGC_YR );
+    if ( !in_spinup ) { // No permafrost thaw during spinup
+        // TODO: Should really be using soil temperature here
+        double Tgav = core->sendMessage( M_GETDATA, D_GLOBAL_TEMP ).value( U_DEGC );
+        Tgav = Tgav >= 2.0 ? Tgav - 2.0 : 0;
+        // Sum permafrost thaw in all biomes
+        for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
+            std::string biome = *it;
+            double biome_c_thaw =
+                permafrost_c.at(biome).value( U_PGC ) *
+                // TODO: 0.172 is thaw area-warming slope from Kessler. Needs to be a param.
+                Tgav * warmingfactor.at(biome) * 0.172 *
+                // TODO: 0.4 is the static C fraction. Needs to be a param.
+                (1 - 0.4);
+            permafrost_thaw_c = permafrost_thaw_c + unitval( biome_c_thaw, U_PGC_YR );
+        }
+    }
 
     // Compute fluxes
     dcdt[ SNBOX_ATMOS ] = // change in atmosphere pool
@@ -1032,7 +1048,7 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
         npp_fas.value( U_PGC_YR )
         + litter_fvs.value( U_PGC_YR )
         + detsoil_flux.value( U_PGC_YR )
-        // + permafrost_thaw.value( U_PGC_YR )
+        + permafrost_thaw_c.value( U_PGC_YR )
         - rh_fsa_current.value( U_PGC_YR )
         - luc_fsa.value( U_PGC_YR );
     dcdt[ SNBOX_OCEAN ] = // change in ocean pool
