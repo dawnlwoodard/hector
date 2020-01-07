@@ -1013,6 +1013,10 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
     if ( !in_spinup ) { // No permafrost thaw during spinup
         // TODO: Should really be using soil temperature here
         double Tgav = core->sendMessage( M_GETDATA, D_GLOBAL_TEMP ).value( U_DEGC );
+        // TODO: Kessler thaw-warming slope (below) is calibrated to thaw since
+        // 2000. Hector's year 2000 has a global temperature increase of around
+        // 2 K, which is where this number comes from. What we really want to do
+        // is get a relationship based on warming since pre-industrial.
         Tgav = Tgav >= 2.0 ? Tgav - 2.0 : 0;
         // Sum permafrost thaw in all biomes
         for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
