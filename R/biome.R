@@ -31,7 +31,7 @@ create_biome <- function(core, biome,
   setvar(core, 0, VEG_C(biome), veg_c0, "PgC")
   setvar(core, 0, DETRITUS_C(biome), detritus_c0, "PgC")
   setvar(core, 0, SOIL_C(biome), soil_c0, "PgC")
-  setvar(core, 0, PERMAFROST_C(biome), soil_c0, "PgC")
+  setvar(core, 0, PERMAFROST_C(biome), permafrost_c0, "PgC")
   setvar(core, NA, NPP_FLUX0(biome), npp_flux0, "PgC/yr")
   setvar(core, NA, WARMINGFACTOR(biome), warmingfactor, NA)
   setvar(core, NA, BETA(biome), beta, NA)

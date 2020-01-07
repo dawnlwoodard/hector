@@ -781,9 +781,10 @@ void SimpleNbox::stashCValues( double t, const double c[] )
     for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
         std::string biome = *it;
         const double wt     = ( npp( biome ) + rh( biome ) ) / npp_rh_total;
+        H_LOG( logger,Logger::DEBUG ) << "Biome " << biome << " weight = " << wt << std::endl;
         // If no permafrost, the weight evaluates to `nan`, so set to zero.
         const double wt_pf  = permafrost_total > 0 ? permafrost_c.at( biome ) / permafrost_total : 0;
-        H_LOG( logger,Logger::DEBUG ) << "Biome " << biome << " weight = " << wt << std::endl;
+        H_LOG( logger,Logger::DEBUG ) << "Biome " << biome << " permafrost weight = " << wt_pf << std::endl;
         veg_c[ biome ]      = veg_c.at( biome ) + veg_delta * wt;
         detritus_c[ biome ] = detritus_c.at( biome ) + det_delta * wt;
         soil_c[ biome ]     = soil_c.at( biome ) + soil_delta * wt;
