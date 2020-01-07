@@ -785,6 +785,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// RH_CH4_FRAC
+String RH_CH4_FRAC();
+RcppExport SEXP _hector_RH_CH4_FRAC() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(RH_CH4_FRAC());
+    return rcpp_result_gen;
+END_RCPP
+}
 // LIFETIME_SOIL
 String LIFETIME_SOIL();
 RcppExport SEXP _hector_LIFETIME_SOIL() {
@@ -1721,6 +1731,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_hector_RF_CH4", (DL_FUNC) &_hector_RF_CH4, 0},
     {"_hector_EMISSIONS_CH4", (DL_FUNC) &_hector_EMISSIONS_CH4, 0},
     {"_hector_NATURAL_CH4", (DL_FUNC) &_hector_NATURAL_CH4, 0},
+    {"_hector_RH_CH4_FRAC", (DL_FUNC) &_hector_RH_CH4_FRAC, 0},
     {"_hector_LIFETIME_SOIL", (DL_FUNC) &_hector_LIFETIME_SOIL, 0},
     {"_hector_LIFETIME_STRAT", (DL_FUNC) &_hector_LIFETIME_STRAT, 0},
     {"_hector_ATMOSPHERIC_N2O", (DL_FUNC) &_hector_ATMOSPHERIC_N2O, 0},

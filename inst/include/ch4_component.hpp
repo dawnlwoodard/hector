@@ -65,6 +65,7 @@ public:
     unitval CH4N;   // annual natural emissions, Tg CH4/yr
     unitval Tsoil;  // annual CH4 loss to soil, Tg CH4/yr
     unitval Tstrat; //  annual CH4 loss to stratosphere, Tg CH4/yr
+    unitval rh_ch4_frac; // fraction of heterotrophic respiration that is CH4 (unitless)
 
     // logger
     Logger logger;

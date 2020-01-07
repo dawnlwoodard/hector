@@ -59,6 +59,8 @@ void CH4Component::init( Core* coreptr ) {
     core->registerDependency( D_LIFETIME_OH, getComponentName() ); 
     // ...and what input data that we can accept
     core->registerInput(D_EMISSIONS_CH4, getComponentName());
+    core->registerInput(D_NATURAL_CH4, getComponentName());
+    core->registerInput(D_RH_CH4_FRAC, getComponentName());
 }
 
 //------------------------------------------------------------------------------
@@ -107,6 +109,9 @@ void CH4Component::setData( const string& varName,
          } else if( varName == D_NATURAL_CH4 ) {
             H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed" );
             CH4N = data.getUnitval( U_TG_CH4 );
+         } else if( varName == D_RH_CH4_FRAC ) {
+            H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed for RH CH4 fraction" );
+            rh_ch4_frac = data.getUnitval( U_UNITLESS );
          }
 		else {
             H_THROW( "Unknown variable name while parsing " + getComponentName() + ": "
@@ -136,9 +141,15 @@ void CH4Component::run( const double runToDate ) throw ( h_exception ) {
     const double current_ch4em = CH4_emissions.get( runToDate ).value( U_TG_CH4 );
     const double current_toh = core->sendMessage( M_GETDATA, D_LIFETIME_OH, runToDate ).value( U_YRS );
     H_LOG( logger, Logger::DEBUG ) << "Year " << runToDate << " current_toh = " << current_toh << std::endl;
-   
+
+    // Some CH4 emissions are a fixed (small) fraction of heterotrophic respiration (RH)
+    #define PG_C_TO_TG_CH4 (1000.0 * 16.04 / 12.01)
+    const double rh_total = core->sendMessage( M_GETDATA, D_RH ).value( U_PGC_YR );
+    const double rh_ch4 = rh_total * rh_ch4_frac * PG_C_TO_TG_CH4;
+
+    // Additional, background CH4 natural emissions
     const double ch4n =  CH4N.value( U_TG_CH4 );
-    const double emisTocon = ( current_ch4em + ch4n ) / UC_CH4.value( U_TG_PPBV );
+    const double emisTocon = ( current_ch4em + rh_ch4 + ch4n ) / UC_CH4.value( U_TG_PPBV );
     double previous_ch4 = M0.value( U_PPBV_CH4 );
      
     H_LOG( logger, Logger::DEBUG ) << "Year " << runToDate << " previous CH4 = " << previous_ch4 << std::endl;

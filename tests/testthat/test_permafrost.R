@@ -1,11 +1,12 @@
 context("Permafrost submodel")
 
+rcp45 <- system.file(
+  "input", "hector_rcp45.ini",
+  package = "hector"
+)
+
 test_that("Permafrost submodel works", {
 
-  rcp45 <- system.file(
-    "input", "hector_rcp45.ini",
-    package = "hector"
-  )
   raw_ini <- trimws(readLines(rcp45))
   new_ini <- raw_ini
   new_ini[grep("^permafrost_c *=", new_ini)] <- "permafrost_c=1035"
@@ -13,7 +14,7 @@ test_that("Permafrost submodel works", {
   csv_paths_l <- regmatches(new_ini[icsv],
                             regexec(".*?=csv:(.*?\\.csv)", new_ini[icsv]))
   csv_paths <- vapply(csv_paths_l, `[[`, character(1), 2)
-  csv_full_paths <- file.path(dirname(rcp45_file), csv_paths)
+  csv_full_paths <- file.path(dirname(rcp45), csv_paths)
   new_ini_l <- Map(
     gsub,
     pattern = csv_paths,

@@ -592,6 +592,13 @@ return D_NATURAL_CH4;
 //' @rdname methane
 //' @export
 // [[Rcpp::export]]
+String RH_CH4_FRAC() {
+return D_RH_CH4_FRAC;
+}
+
+//' @rdname methane
+//' @export
+// [[Rcpp::export]]
 String LIFETIME_SOIL() {
 return D_LIFETIME_SOIL;
 }

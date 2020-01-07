@@ -470,6 +470,12 @@ NATURAL_CH4 <- function() {
 
 #' @rdname methane
 #' @export
+RH_CH4_FRAC <- function() {
+    .Call('_hector_RH_CH4_FRAC', PACKAGE = 'hector')
+}
+
+#' @rdname methane
+#' @export
 LIFETIME_SOIL <- function() {
     .Call('_hector_LIFETIME_SOIL', PACKAGE = 'hector')
 }
