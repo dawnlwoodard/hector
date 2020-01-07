@@ -27,7 +27,7 @@ using namespace boost;
 //------------------------------------------------------------------------------
 /*! \brief constructor
  */
-SimpleNbox::SimpleNbox() : CarbonCycleModel( 6 ), masstot(0.0) {
+SimpleNbox::SimpleNbox() : CarbonCycleModel( 7 ), masstot(0.0) {
     ffiEmissions.allowInterp( true );
     ffiEmissions.name = "ffiEmissions";
     lucEmissions.allowInterp( true );
@@ -38,6 +38,7 @@ SimpleNbox::SimpleNbox() : CarbonCycleModel( 6 ), masstot(0.0) {
     // earth_c keeps track of how much fossil C is pulled out
     // so that we can do a mass-balance check throughout the run
     earth_c.set( 0.0, U_PGC );
+
 }
 
 //------------------------------------------------------------------------------
@@ -68,6 +69,7 @@ void SimpleNbox::init( Core* coreptr ) {
     core->registerCapability( D_VEGC, getComponentName() );
     core->registerCapability( D_DETRITUSC, getComponentName() );
     core->registerCapability( D_SOILC, getComponentName() );
+    core->registerCapability( D_PERMAFROSTC, getComponentName() );
     core->registerCapability( D_NPP_FLUX0, getComponentName() );
     core->registerCapability( D_NPP, getComponentName() );
 
@@ -81,6 +83,7 @@ void SimpleNbox::init( Core* coreptr ) {
     core->registerInput(D_VEGC, getComponentName());
     core->registerInput(D_DETRITUSC, getComponentName());
     core->registerInput(D_SOILC, getComponentName());
+    core->registerInput(D_PERMAFROSTC, getComponentName());
     core->registerInput(D_NPP_FLUX0, getComponentName());
     core->registerInput(D_WARMINGFACTOR, getComponentName());
     core->registerInput(D_BETA, getComponentName());
@@ -184,13 +187,13 @@ void SimpleNbox::setData( const std::string &varName,
             set_c0(data.getUnitval(U_PPMV_CO2).value(U_PPMV_CO2));
         }
         else if( varNameParsed == D_VEGC ) {
-            // For `veg_c`, `detritus_c`, and `soil_c`, if date is not
-            // provided, set only the "current" model pool, without
-            // touching the time series variable. This is to
-            // accommodate the way the INI file is parsed. For
-            // interactive use, you will usually want to pass the date
-            // -- otherwise, the current value will be overridden by a
-            // `reset` (which includes code like `veg_c = veg_c_tv.get(t)`).
+            // For `veg_c`, `detritus_c`, `soil_c`, and `permafrost_c`, if date
+            // is not provided, set only the "current" model pool, without
+            // touching the time series variable. This is to accommodate the way
+            // the INI file is parsed. For interactive use, you will usually
+            // want to pass the date -- otherwise, the current value will be
+            // overridden by a `reset` (which includes code like `veg_c =
+            // veg_c_tv.get(t)`).
             veg_c[ biome ] = data.getUnitval( U_PGC );
             if (data.date != Core::undefinedIndex()) {
                 veg_c_tv.set(data.date, veg_c);
@@ -206,6 +209,12 @@ void SimpleNbox::setData( const std::string &varName,
             soil_c[ biome ] = data.getUnitval( U_PGC );
             if (data.date != Core::undefinedIndex()) {
                 soil_c_tv.set(data.date, soil_c);
+            }
+        }
+        else if( varNameParsed == D_PERMAFROSTC ){
+            permafrost_c[ biome ] = data.getUnitval( U_PGC );
+            if ( data.date != Core::undefinedIndex()) {
+                permafrost_c_tv.set(data.date, permafrost_c);
             }
         }
 
@@ -306,6 +315,7 @@ void SimpleNbox::sanitychecks() throw( h_exception )
         H_ASSERT( veg_c.at(biome).value( U_PGC ) >= 0.0, "veg_c pool < 0" );
         H_ASSERT( detritus_c.at(biome).value( U_PGC ) >= 0.0, "detritus_c pool < 0" );
         H_ASSERT( soil_c.at(biome).value( U_PGC ) >= 0.0, "soil_c pool < 0" );
+        H_ASSERT( permafrost_c.at(biome).value( U_PGC ) >= 0.0, "permafrost_c pool < 0" );
         H_ASSERT( npp_flux0.at(biome).value( U_PGC_YR ) >= 0.0, "npp_flux0 < 0" );
 
         H_ASSERT( f_nppv.at(biome) >= 0.0, "f_nppv <0" );
@@ -361,11 +371,16 @@ void SimpleNbox::log_pools( const double t )
     // Log pool states
     H_LOG( logger,Logger::DEBUG ) << "---- simpleNbox pool states at t=" << t << " ----" << std::endl;
     H_LOG( logger,Logger::DEBUG ) << "Atmos = " << atmos_c << std::endl;
-    H_LOG( logger,Logger::DEBUG ) << "Biome \tveg_c \t\tdetritus_c \tsoil_c" << std::endl;
+    H_LOG( logger,Logger::DEBUG ) << "Biome \tveg_c \t\tdetritus_c \tsoil_c\t\t permafrost_c" << std::endl;
     for ( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
         std::string biome = *it;
-        H_LOG( logger,Logger::DEBUG ) << biome << "\t" << veg_c[ biome ] << "\t" <<
-        detritus_c[ biome ] << "\t\t" << soil_c[ biome ] << std::endl;
+        H_LOG( logger,Logger::DEBUG ) <<
+            biome << "\t" <<
+            veg_c[ biome ] << "\t" <<
+            detritus_c[ biome ] << "\t\t" <<
+            soil_c[ biome ] << "\t" <<
+            permafrost_c[ biome ] <<
+            std::endl;
     }
     H_LOG( logger,Logger::DEBUG ) << "Earth = " << earth_c << std::endl;
 }
@@ -387,6 +402,7 @@ void SimpleNbox::prepareToRun() throw( h_exception )
     H_ASSERT( biome_list.size() == veg_c.size(), "veg_c and biome_list data not same size" );
     H_ASSERT( biome_list.size() == detritus_c.size(), "detritus_c and biome_list not same size" );
     H_ASSERT( biome_list.size() == soil_c.size(), "soil_c and biome_list not same size" );
+    H_ASSERT( biome_list.size() == permafrost_c.size(), "permafrost_c and biome_list not same size" );
     H_ASSERT( biome_list.size() == npp_flux0.size(), "npp_flux0 and biome_list not same size" );
 
     for ( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
@@ -394,6 +410,7 @@ void SimpleNbox::prepareToRun() throw( h_exception )
         H_LOG( logger, Logger::DEBUG ) << "Checking that data for biome '" << biome << "' is complete" << std::endl;
         H_ASSERT( detritus_c.count( biome ), "no biome data for detritus_c" );
         H_ASSERT( soil_c.count( biome ), "no biome data for soil_c" );
+        H_ASSERT( permafrost_c.count( biome ), "no biome data for permafrost_c" );
         H_ASSERT( npp_flux0.count( biome ), "no biome data for npp_flux0" );
 
         H_ASSERT( beta.count( biome ), "no biome value for beta" );
@@ -585,6 +602,19 @@ unitval SimpleNbox::getData(const std::string& varName,
             else
                 returnval = soil_c_tv.get(date).at(biome);
         }
+    } else if( varNameParsed == D_PERMAFROSTC ) {
+        if(biome == SNBOX_DEFAULT_BIOME) {
+            if(date == Core::undefinedIndex())
+                returnval = sum_map( permafrost_c );
+            else
+                returnval = sum_map(permafrost_c_tv.get(date));
+        } else {
+            H_ASSERT(has_biome( biome ), biome_error);
+            if(date == Core::undefinedIndex())
+                returnval = permafrost_c.at(biome);
+            else
+                returnval = permafrost_c_tv.get(date).at(biome);
+        }
     } else if( varNameParsed == D_NPP_FLUX0 ) {
       H_ASSERT(date == Core::undefinedIndex(), "Date not allowed for npp_flux0" );
       H_ASSERT(has_biome( biome ), biome_error);
@@ -619,6 +649,7 @@ void SimpleNbox::reset(double time) throw(h_exception)
     veg_c = veg_c_tv.get(time);
     detritus_c = detritus_c_tv.get(time);
     soil_c = soil_c_tv.get(time);
+    permafrost_c = permafrost_c_tv.get(time);
 
     residual = residual_ts.get(time);
 
@@ -646,6 +677,7 @@ void SimpleNbox::reset(double time) throw(h_exception)
     veg_c_tv.truncate(time);
     detritus_c_tv.truncate(time);
     soil_c_tv.truncate(time);
+    permafrost_c_tv.truncate(time);
 
     residual_ts.truncate(time);
 
@@ -686,6 +718,7 @@ void SimpleNbox::getCValues( double t, double c[] )
     c[ SNBOX_SOIL ] = sum_map( soil_c ).value( U_PGC );
     omodel->getCValues( t, c );
     c[ SNBOX_EARTH ] = earth_c.value( U_PGC );
+    c[ SNBOX_PERMAFROST ] = sum_map( permafrost_c ).value( U_PGC );
 
     ODEstartdate = t;
 }
@@ -707,12 +740,14 @@ void SimpleNbox::stashCValues( double t, const double c[] )
     H_ASSERT( yf >= 0 && yf <= 1, "yearfraction out of bounds" );
 
     H_LOG( logger,Logger::DEBUG ) << "Stashing at t=" << t << ", solver pools at " << t << ": " <<
-        "  atm = " << c[ 0 ] <<
-        "  veg = " << c[ 1 ] <<
-        "  det = " << c[ 2 ] <<
-        "  soil = " << c[ 3 ] <<
-        "  ocean = " << c[ 4 ] <<
-        "  earth = " << c[ 5 ] << std::endl;
+        "  atm = " << c[ SNBOX_ATMOS ] <<
+        "  veg = " << c[ SNBOX_VEG ] <<
+        "  det = " << c[ SNBOX_DET ] <<
+        "  soil = " << c[ SNBOX_SOIL ] <<
+        "  ocean = " << c[ SNBOX_OCEAN ] <<
+        "  earth = " << c[ SNBOX_EARTH ] <<
+        "  permafrost = " << c[ SNBOX_PERMAFROST ] <<
+        std::endl;
 
     log_pools( t );
 
@@ -728,23 +763,31 @@ void SimpleNbox::stashCValues( double t, const double c[] )
     // Apportioning is done by NPP and RH
     // i.e., biomes with higher values get more of any C change
     const unitval npp_rh_total = sum_npp() + sum_rh(); // these are both positive
+    // Use separate weighting and apportioning for permafrost
+    const unitval permafrost_total = sum_map( permafrost_c );
     const unitval newveg( c[ SNBOX_VEG ], U_PGC );
     const unitval newdet( c[ SNBOX_DET ], U_PGC );
     const unitval newsoil( c[ SNBOX_SOIL ], U_PGC );
+    const unitval newpermafrost( c[ SNBOX_PERMAFROST ], U_PGC );
     unitval veg_delta = newveg - sum_map( veg_c );  // TODO: make const
     unitval det_delta = newdet - sum_map( detritus_c );  // TODO: make const
     unitval soil_delta = newsoil - sum_map( soil_c );  // TODO: make const
+    unitval permafrost_delta = newpermafrost - permafrost_total;  // TODO: make const
     H_LOG( logger,Logger::DEBUG ) << "veg_delta = " << veg_delta << std::endl;
     H_LOG( logger,Logger::DEBUG ) << "det_delta = " << det_delta << std::endl;
     H_LOG( logger,Logger::DEBUG ) << "soil_delta = " << soil_delta << std::endl;
+    H_LOG( logger,Logger::DEBUG ) << "permafrost_delta = " << permafrost_delta << std::endl;
 
     for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
         std::string biome = *it;
         const double wt     = ( npp( biome ) + rh( biome ) ) / npp_rh_total;
+        // If no permafrost, the weight evaluates to `nan`, so set to zero.
+        const double wt_pf  = permafrost_total > 0 ? permafrost_c.at( biome ) / permafrost_total : 0;
+        H_LOG( logger,Logger::DEBUG ) << "Biome " << biome << " weight = " << wt << std::endl;
         veg_c[ biome ]      = veg_c.at( biome ) + veg_delta * wt;
         detritus_c[ biome ] = detritus_c.at( biome ) + det_delta * wt;
         soil_c[ biome ]     = soil_c.at( biome ) + soil_delta * wt;
-        H_LOG( logger,Logger::DEBUG ) << "Biome " << biome << " weight = " << wt << std::endl;
+        permafrost_c[ biome ]     = permafrost_c.at( biome ) + permafrost_delta * wt_pf;
     }
 
     log_pools( t );
@@ -963,6 +1006,9 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
     // Oxidized methane of fossil fuel origin
     unitval ch4ox_current( 0.0, U_PGC_YR );     //TODO: implement this
 
+    // As permafrost thaws, the C is mobilized into the soil pool.
+    unitval permafrost_thaw_c( 0.0, U_PGC_YR );
+
     // Compute fluxes
     dcdt[ SNBOX_ATMOS ] = // change in atmosphere pool
         ffi_flux_current.value( U_PGC_YR )
@@ -985,15 +1031,18 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
         npp_fas.value( U_PGC_YR )
         + litter_fvs.value( U_PGC_YR )
         + detsoil_flux.value( U_PGC_YR )
+        // + permafrost_thaw.value( U_PGC_YR )
         - rh_fsa_current.value( U_PGC_YR )
         - luc_fsa.value( U_PGC_YR );
     dcdt[ SNBOX_OCEAN ] = // change in ocean pool
         atmosocean_flux.value( U_PGC_YR );
     dcdt[ SNBOX_EARTH ] = // change in earth pool
         - ffi_flux_current.value( U_PGC_YR );
+    dcdt[ SNBOX_PERMAFROST ] = // change in permafrost pool
+     - permafrost_thaw_c.value( U_PGC_YR );
 
-/*    printf( "%6.3f%8.3f%8.2f%8.2f%8.2f%8.2f%8.2f\n", t, dcdt[ SNBOX_ATMOS ],
-            dcdt[ SNBOX_VEG ], dcdt[ SNBOX_DET ], dcdt[ SNBOX_SOIL ], dcdt[ SNBOX_OCEAN ], dcdt[ SNBOX_EARTH ] );
+/*    printf( "%6.3f%8.3f%8.2f%8.2f%8.2f%8.2f%8.2f%8.2f\n", t, dcdt[ SNBOX_ATMOS ],
+            dcdt[ SNBOX_VEG ], dcdt[ SNBOX_DET ], dcdt[ SNBOX_SOIL ], dcdt[ SNBOX_OCEAN ], dcdt[ SNBOX_EARTH ], dcdt[ SNBOX_PERMAFROST ] );
 */
     return omodel_err;
 }
@@ -1104,6 +1153,7 @@ void SimpleNbox::record_state(double t)
     veg_c_tv.set(t, veg_c);
     detritus_c_tv.set(t, detritus_c);
     soil_c_tv.set(t, soil_c);
+    permafrost_c_tv.set(t, permafrost_c);
 
     residual_ts.set(t, residual);
 
@@ -1158,6 +1208,8 @@ void SimpleNbox::createBiome(const std::string& biome)
     add_biome_to_ts(detritus_c_tv, biome, detritus_c.at( biome ));
     soil_c[ biome ] = unitval(0, U_PGC);
     add_biome_to_ts(soil_c_tv, biome, soil_c.at( biome ));
+    permafrost_c[ biome ] = unitval(0, U_PGC);
+    add_biome_to_ts(permafrost_c_tv, biome, permafrost_c.at( biome ));
 
     npp_flux0[ biome ] = unitval(0, U_PGC_YR);
 
@@ -1210,6 +1262,8 @@ void SimpleNbox::deleteBiome(const std::string& biome) // Throw an error if the 
     remove_biome_from_ts(detritus_c_tv, biome);
     soil_c.erase( biome );
     remove_biome_from_ts(soil_c_tv, biome);
+    permafrost_c.erase( biome );
+    remove_biome_from_ts(permafrost_c_tv, biome);
 
     // Others
     npp_flux0.erase( biome );
@@ -1265,6 +1319,9 @@ void SimpleNbox::renameBiome(const std::string& oldname, const std::string& newn
     soil_c[ newname ] = soil_c.at( oldname );
     soil_c.erase(oldname);
     rename_biome_in_ts(soil_c_tv, oldname, newname);
+    permafrost_c[ newname ] = permafrost_c.at( oldname );
+    permafrost_c.erase(oldname);
+    rename_biome_in_ts(permafrost_c_tv, oldname, newname);
 
     npp_flux0[ newname ] = npp_flux0.at( oldname );
     npp_flux0.erase(oldname);

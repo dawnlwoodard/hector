@@ -25,6 +25,7 @@
 #define SNBOX_SOIL 3
 #define SNBOX_OCEAN 4
 #define SNBOX_EARTH 5
+#define SNBOX_PERMAFROST 6
 #define MB_EPSILON 0.001                //!< allowed tolerance for mass-balance checks, Pg C
 #define SNBOX_PARSECHAR "."             //!< input separator between <biome> and <pool>
 #define SNBOX_DEFAULT_BIOME "global"    //!< value if no biome supplied
@@ -109,7 +110,12 @@ private:
     unitval_stringmap veg_c;        //!< vegetation pools, Pg C
     unitval_stringmap detritus_c;   //!< detritus pools, Pg C
     unitval_stringmap soil_c;       //!< soil pool, Pg C
-    
+
+    // `permafrost_c` keeps track of C immobilized in permafrost. As permafrost
+    // thaws, some of this C is transferred into the soil C pool. This pool is
+    // biome-specific.
+    unitval_stringmap permafrost_c; //!< permafrost C pool, Pg C
+
     unitval residual;               //!< residual (when constraining Ca) flux, Pg C
 
     double_stringmap tempfertd, tempferts; //!< temperature effect on respiration (unitless)
@@ -127,6 +133,7 @@ private:
     tvector<unitval_stringmap> veg_c_tv;      //!< Time series of biome-specific vegetation carbon pools
     tvector<unitval_stringmap> detritus_c_tv; //!< Time series of biome-specific detritus carbon pools
     tvector<unitval_stringmap> soil_c_tv;     //!< Time series of biome-specific soil carbon pools
+    tvector<unitval_stringmap> permafrost_c_tv;     //!< Time series of biome-specific permafrost carbon pools
 
     tseries<unitval> residual_ts; //!< Time series of residual flux values
 
