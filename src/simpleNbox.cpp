@@ -19,6 +19,7 @@
 #include "avisitor.hpp"
 
 #include <algorithm>
+#include <math.h>
 
 namespace Hector {
 
@@ -1011,22 +1012,24 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
     // As permafrost thaws, the C is mobilized into the soil pool.
     unitval permafrost_thaw_c( 0.0, U_PGC_YR );
     if ( !in_spinup ) { // No permafrost thaw during spinup
-        // TODO: Should really be using soil temperature here
+        // TODO: Should probably be using soil temperature here?
         double Tgav = core->sendMessage( M_GETDATA, D_GLOBAL_TEMP ).value( U_DEGC );
-        // TODO: Kessler thaw-warming slope (below) is calibrated to thaw since
-        // 2000. Hector's year 2000 has a global temperature increase of around
-        // 2 K, which is where this number comes from. What we really want to do
-        // is get a relationship based on warming since pre-industrial.
-        Tgav = Tgav >= 2.0 ? Tgav - 2.0 : 0;
+        // Currently, these are calibrated to produce a 0.172 / year slope from
+        // 2 to 6 degrees C, which was the linear form of this in Kessler.
+        // TODO: These should be settable parameters
+        double pf_exp_slope = 0.829;
+        double pf_exp_intercept = 4.078;
+        // Static (non-labile) C fraction of permafrost
+        // TODO: Needs to be a settable param.
+        double fpf_static = 0.4;
         // Sum permafrost thaw in all biomes
         for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
             std::string biome = *it;
-            double biome_c_thaw =
-                permafrost_c.at(biome).value( U_PGC ) *
-                // TODO: 0.172 is thaw area-warming slope from Kessler. Needs to be a param.
-                Tgav * warmingfactor.at(biome) * 0.172 *
-                // TODO: 0.4 is the static C fraction. Needs to be a param.
-                (1 - 0.4);
+            double Tgav_biome = Tgav * warmingfactor.at(biome);
+            double exp_term = pf_exp_slope * Tgav_biome - pf_exp_intercept;
+            double frac_remain = 1 / (1 + exp(exp_term));
+            double biome_c_thaw = permafrost_c.at(biome).value( U_PGC ) *
+                (1 - frac_remain) * (1 - fpf_static);
             permafrost_thaw_c = permafrost_thaw_c + unitval( biome_c_thaw, U_PGC_YR );
         }
     }
