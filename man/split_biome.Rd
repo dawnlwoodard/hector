@@ -6,7 +6,8 @@
 \usage{
 split_biome(core, old_biome, new_biomes,
   fveg_c = rep(1/length(new_biomes), length(new_biomes)),
-  fdetritus_c = fveg_c, fsoil_c = fveg_c, fnpp_flux0 = fveg_c, ...)
+  fdetritus_c = fveg_c, fsoil_c = fveg_c, fpermafrost_c = fveg_c,
+  fnpp_flux0 = fveg_c, ...)
 }
 \arguments{
 \item{core}{Hector core}
@@ -31,6 +32,9 @@ biome. Defaults to the same value as `fveg_c`.}
 \item{...}{Additional biome-specific parameters, as set by
 [create_biome()]. Note that these are passed to [create_biome()]
 via [base::mapply()], so they can be vectorized across biomes.}
+
+\item{fsoil_c}{Fractions of permafrost C distributed to each biome.
+Defaults to the same value as `fveg_c`.}
 }
 \description{
 Distributes vegetation, detritus, and soil C, and initial NPP flux

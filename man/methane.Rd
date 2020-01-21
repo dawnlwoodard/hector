@@ -6,6 +6,7 @@
 \alias{PREINDUSTRIAL_CH4}
 \alias{EMISSIONS_CH4}
 \alias{NATURAL_CH4}
+\alias{RH_CH4_FRAC}
 \alias{LIFETIME_SOIL}
 \alias{LIFETIME_STRAT}
 \title{Identifiers for quantities in the methane component}
@@ -17,6 +18,8 @@ PREINDUSTRIAL_CH4()
 EMISSIONS_CH4()
 
 NATURAL_CH4()
+
+RH_CH4_FRAC()
 
 LIFETIME_SOIL()
 
