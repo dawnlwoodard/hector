@@ -119,6 +119,7 @@ private:
     unitval residual;               //!< residual (when constraining Ca) flux, Pg C
 
     double_stringmap tempfertd, tempferts; //!< temperature effect on respiration (unitless)
+    double_stringmap f_frozen, new_thaw;   //!< relative amounts and changes in permafrost
 
     /*****************************************************************
      * Records of component state

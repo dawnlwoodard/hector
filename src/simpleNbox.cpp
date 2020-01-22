@@ -55,6 +55,8 @@ void SimpleNbox::init( Core* coreptr ) {
     residual.set( 0.0, U_PGC );
     tempfertd[ SNBOX_DEFAULT_BIOME ] = 1.0;
     tempferts[ SNBOX_DEFAULT_BIOME ] = 1.0;
+    f_frozen[ SNBOX_DEFAULT_BIOME ] = 1.0;
+    new_thaw[ SNBOX_DEFAULT_BIOME ] = 0.0;
 
     // Initialize the `biome_list` with just "global"
     biome_list.push_back( SNBOX_DEFAULT_BIOME );
@@ -1016,24 +1018,14 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
     // As permafrost thaws, the C is mobilized into the soil pool.
     unitval permafrost_thaw_c( 0.0, U_PGC_YR );
     if ( !in_spinup ) { // No permafrost thaw during spinup
-        // TODO: Should probably be using soil temperature here?
-        double Tgav = core->sendMessage( M_GETDATA, D_GLOBAL_TEMP ).value( U_DEGC );
-        // Currently, these are calibrated to produce a 0.172 / year slope from
-        // 0.8 to 4 degrees C, which was the linear form of this in Kessler.
-        // TODO: These should be settable parameters
-        double pf_Q = 2.371;
-        double pf_B = -0.676;
-        double pf_pow = -3.685;
         // Static (non-labile) C fraction of permafrost
         // TODO: Needs to be a settable param.
         double fpf_static = 0.4;
         // Sum permafrost thaw in all biomes
         for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
             std::string biome = *it;
-            double Tgav_biome = Tgav * warmingfactor.at(biome);
-            double frac_thaw = pow(1.0 + pf_Q * exp(pf_B * Tgav_biome), pf_pow);
             double biome_c_thaw = permafrost_c.at(biome).value( U_PGC ) *
-                frac_thaw * (1 - fpf_static);
+                new_thaw.at(biome) * (1 - fpf_static);
             permafrost_thaw_c = permafrost_thaw_c + unitval( biome_c_thaw, U_PGC_YR );
         }
     }
@@ -1126,6 +1118,8 @@ void SimpleNbox::slowparameval( double t, const double c[] )
         if( in_spinup ) {
             tempfertd[ biome ] = 1.0;  // no perturbation allowed in spinup
             tempferts[ biome ] = 1.0;  // no perturbation allowed in spinup
+            f_frozen[ biome ] = 1.0;
+            new_thaw[ biome ] = 0.0;
         } else {
             double wf;
             if( warmingfactor.count( biome ) ) {
@@ -1140,6 +1134,25 @@ void SimpleNbox::slowparameval( double t, const double c[] )
 
             tempfertd[ biome ] = pow( q10_rh.at( biome ), ( Tgav_biome / 10.0 ) ); // detritus warms with air
 
+            // Permafrost thaw
+            // Currently, these are calibrated to produce a 0.172 / year slope from
+            // 0.8 to 4 degrees C, which was the linear form of this in Kessler.
+            // TODO: These should be settable parameters
+            double pf_Q = 2.371;
+            double pf_B = -0.676;
+            double pf_pow = -3.685;
+
+            // We can lose permafrost, but not re-gain it.
+            new_thaw[ biome ] = 0.0;
+            if (Tgav_biome > 0) {
+                double f_frozen_current = 1 - pow(1.0 + pf_Q * exp(pf_B * Tgav_biome), pf_pow);
+                new_thaw[ biome ] = f_frozen[ biome ] - f_frozen_current;
+                if (new_thaw[ biome ] > 0) {
+                    f_frozen[ biome ] = f_frozen_current;
+                } else {
+                    new_thaw[ biome ] = 0.0;
+                }
+            }
 
             // Soil warm very slowly relative to the atmosphere
             // We use a mean temperature of a window (size Q10_TEMPN) of temperatures to scale Q10
