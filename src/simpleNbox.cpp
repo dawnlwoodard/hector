@@ -1019,10 +1019,11 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
         // TODO: Should probably be using soil temperature here?
         double Tgav = core->sendMessage( M_GETDATA, D_GLOBAL_TEMP ).value( U_DEGC );
         // Currently, these are calibrated to produce a 0.172 / year slope from
-        // 2 to 6 degrees C, which was the linear form of this in Kessler.
+        // 0.8 to 4 degrees C, which was the linear form of this in Kessler.
         // TODO: These should be settable parameters
-        double pf_exp_slope = 0.829;
-        double pf_exp_intercept = 4.078;
+        double pf_Q = 2.371;
+        double pf_B = -0.676;
+        double pf_pow = -3.685;
         // Static (non-labile) C fraction of permafrost
         // TODO: Needs to be a settable param.
         double fpf_static = 0.4;
@@ -1030,10 +1031,9 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
         for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
             std::string biome = *it;
             double Tgav_biome = Tgav * warmingfactor.at(biome);
-            double exp_term = pf_exp_slope * Tgav_biome - pf_exp_intercept;
-            double frac_remain = 1 / (1 + exp(exp_term));
+            double frac_thaw = pow(1.0 + pf_Q * exp(pf_B * Tgav_biome), pf_pow);
             double biome_c_thaw = permafrost_c.at(biome).value( U_PGC ) *
-                (1 - frac_remain) * (1 - fpf_static);
+                frac_thaw * (1 - fpf_static);
             permafrost_thaw_c = permafrost_thaw_c + unitval( biome_c_thaw, U_PGC_YR );
         }
     }
