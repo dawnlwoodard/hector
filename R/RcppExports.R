@@ -803,6 +803,13 @@ PERMAFROST_C <- function(biome = "") {
     .Call('_hector_PERMAFROST_C', PACKAGE = 'hector', biome)
 }
 
+#' @describeIn carboncycle Permafrost frozen fraction (`"unitless"`)
+#' @inheritParams BETA
+#' @export
+F_FROZEN <- function(biome = "") {
+    .Call('_hector_F_FROZEN', PACKAGE = 'hector', biome)
+}
+
 #' @describeIn carboncycle Initial net primary productivity (NPP)
 #'   flux (`"Pg C year^-1"`)
 #' @inheritParams BETA

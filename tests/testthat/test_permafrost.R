@@ -5,7 +5,7 @@ rcp45 <- system.file(
   package = "hector"
 )
 
-test_that("Permafrost submodel works", {
+test_that("Permafrost submodel works from INI file", {
 
   raw_ini <- trimws(readLines(rcp45))
   new_ini <- raw_ini
@@ -50,4 +50,22 @@ test_that("Permafrost submodel works", {
   # Accounting for permafrost should elevate CO2 and temperature
   expect_true(all(pf_results[["value"]] >= orig_results[["value"]]))
 
+})
+
+test_that("Permafrost works via setvar", {
+  hc <- newcore(rcp45)
+  dates <- seq(2020, 2100)
+  run(hc, max(dates))
+  outvars <- c(ATMOSPHERIC_CO2(), GLOBAL_TEMP(), F_FROZEN(), SOIL_C())
+  no_pf <- Map(function(v) fetchvars(hc, dates, v)$value, outvars)
+  names(no_pf) <- outvars
+  reset(hc)
+  setvar(hc, 0, PERMAFROST_C(), 1035, "PgC")
+  run(hc, max(dates))
+  yes_pf <- Map(function(v) fetchvars(hc, dates, v)$value, outvars)
+  names(yes_pf) <- outvars
+  expect_true(all(yes_pf[[ATMOSPHERIC_CO2()]] >= no_pf[[ATMOSPHERIC_CO2()]]))
+  expect_true(all(yes_pf[[GLOBAL_TEMP()]] >= no_pf[[GLOBAL_TEMP()]]))
+  expect_true(all(yes_pf[[F_FROZEN()]] <= no_pf[[F_FROZEN()]]))
+  expect_true(all(yes_pf[[SOIL_C()]] >= no_pf[[SOIL_C()]]))
 })

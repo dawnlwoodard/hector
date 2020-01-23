@@ -76,7 +76,7 @@ void SimpleNbox::init( Core* coreptr ) {
     core->registerCapability( D_NPP_FLUX0, getComponentName() );
     core->registerCapability( D_NPP, getComponentName() );
     core->registerCapability( D_RH, getComponentName() );
-    core->registerCapability( "f_frozen", getComponentName() );
+    core->registerCapability( D_F_FROZEN, getComponentName() );
 
     // Register our dependencies
     core->registerDependency( D_OCEAN_CFLUX, getComponentName() );
@@ -624,7 +624,7 @@ unitval SimpleNbox::getData(const std::string& varName,
             else
                 returnval = permafrost_c_tv.get(date).at(biome);
         }
-    } else if( varNameParsed == "f_frozen" ) {
+    } else if( varNameParsed == D_F_FROZEN) {
         double tempval;
         if(biome == SNBOX_DEFAULT_BIOME) {
             if(date == Core::undefinedIndex())

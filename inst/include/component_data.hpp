@@ -263,6 +263,7 @@
 #define D_BETA                  "beta"
 //#define D_SIGMA                 "sigma"
 #define D_WARMINGFACTOR         "warmingfactor"
+#define D_F_FROZEN              "f_frozen"
 
 // slr component
 #define D_SL_RC                 "sl_rc"

@@ -1335,6 +1335,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// F_FROZEN
+String F_FROZEN(String biome);
+RcppExport SEXP _hector_F_FROZEN(SEXP biomeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< String >::type biome(biomeSEXP);
+    rcpp_result_gen = Rcpp::wrap(F_FROZEN(biome));
+    return rcpp_result_gen;
+END_RCPP
+}
 // NPP_FLUX0
 String NPP_FLUX0(String biome);
 RcppExport SEXP _hector_NPP_FLUX0(SEXP biomeSEXP) {
@@ -1785,6 +1796,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_hector_DETRITUS_C", (DL_FUNC) &_hector_DETRITUS_C, 1},
     {"_hector_SOIL_C", (DL_FUNC) &_hector_SOIL_C, 1},
     {"_hector_PERMAFROST_C", (DL_FUNC) &_hector_PERMAFROST_C, 1},
+    {"_hector_F_FROZEN", (DL_FUNC) &_hector_F_FROZEN, 1},
     {"_hector_NPP_FLUX0", (DL_FUNC) &_hector_NPP_FLUX0, 1},
     {"_hector_NATURAL_SO2", (DL_FUNC) &_hector_NATURAL_SO2, 0},
     {"_hector_Y2000_SO2", (DL_FUNC) &_hector_Y2000_SO2, 0},

@@ -1033,6 +1033,18 @@ String PERMAFROST_C(String biome = "") {
   return out;
 }
 
+//' @describeIn carboncycle Permafrost frozen fraction (`"unitless"`)
+//' @inheritParams BETA
+//' @export
+// [[Rcpp::export]]
+String F_FROZEN(String biome = "") {
+  if (biome == "") return D_F_FROZEN;
+  String out = biome;
+  out += ".";
+  out += D_F_FROZEN;
+  return out;
+}
+
 //' @describeIn carboncycle Initial net primary productivity (NPP)
 //'   flux (`"Pg C year^-1"`)
 //' @inheritParams BETA
