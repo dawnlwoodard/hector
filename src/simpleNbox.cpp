@@ -980,7 +980,7 @@ unitval SimpleNbox::sum_npp(double time) const
 unitval SimpleNbox::rh_fda( std::string biome ) const
 {
     unitval dflux( detritus_c.at( biome ).value( U_PGC ) * 0.25, U_PGC_YR );
-    return dflux * tempfertd.at( biome );
+    return dflux * tempfertd.at( biome ) * (1.0 - rh_ch4_frac.at( biome ));
 }
 
 //------------------------------------------------------------------------------
@@ -990,7 +990,7 @@ unitval SimpleNbox::rh_fda( std::string biome ) const
 unitval SimpleNbox::rh_fsa( std::string biome ) const
 {
     unitval soilflux( soil_c.at( biome ).value( U_PGC ) * 0.02, U_PGC_YR );
-    return soilflux * tempferts.at( biome );
+    return soilflux * tempferts.at( biome ) * (1.0 - rh_ch4_frac.at( biome ));
 }
 
 //------------------------------------------------------------------------------
@@ -1022,7 +1022,9 @@ unitval SimpleNbox::sum_rh() const
  */
 unitval SimpleNbox::rh_ch4( std::string biome ) const
 {
-    return rh( biome ) * rh_ch4_frac.at(biome);
+    // First term cancels out the rh_co2 fraction to get total C RH
+    // Second term then applies the RH fraction
+    return rh( biome ) / (1.0 - rh_ch4_frac.at(biome)) * rh_ch4_frac.at(biome);
 }
 
 //------------------------------------------------------------------------------
