@@ -1142,11 +1142,12 @@ void SimpleNbox::slowparameval( double t, const double c[] )
             double pf_B = -0.676;
             double pf_pow = -3.685;
 
-            // We can lose permafrost, but not re-gain it.
             new_thaw[ biome ] = 0.0;
-            if (Tgav_biome > 0) {
+            // Only do this math if we have any permafrost C. Otherwise, we can skip it.
+            if (Tgav_biome > 0 & permafrost_c[ biome ] > unitval(0.0, U_PGC)) {
                 double f_frozen_current = 1 - pow(1.0 + pf_Q * exp(pf_B * Tgav_biome), pf_pow);
                 new_thaw[ biome ] = f_frozen[ biome ] - f_frozen_current;
+                // We can lose permafrost, but not re-gain it.
                 if (new_thaw[ biome ] > 0) {
                     f_frozen[ biome ] = f_frozen_current;
                 } else {
