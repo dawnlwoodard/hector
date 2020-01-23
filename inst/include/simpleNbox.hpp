@@ -139,6 +139,7 @@ private:
     tseries<unitval> residual_ts; //!< Time series of residual flux values
 
     tvector<double_stringmap> tempfertd_tv, tempferts_tv; //!< Time series of temperature effect on respiration
+    tvector<double_stringmap> f_frozen_tv;                //!< Time series of frozen permafrost fraction
 
 
     /*****************************************************************

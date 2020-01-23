@@ -76,6 +76,7 @@ void SimpleNbox::init( Core* coreptr ) {
     core->registerCapability( D_NPP_FLUX0, getComponentName() );
     core->registerCapability( D_NPP, getComponentName() );
     core->registerCapability( D_RH, getComponentName() );
+    core->registerCapability( "f_frozen", getComponentName() );
 
     // Register our dependencies
     core->registerDependency( D_OCEAN_CFLUX, getComponentName() );
@@ -623,6 +624,21 @@ unitval SimpleNbox::getData(const std::string& varName,
             else
                 returnval = permafrost_c_tv.get(date).at(biome);
         }
+    } else if( varNameParsed == "f_frozen" ) {
+        double tempval;
+        if(biome == SNBOX_DEFAULT_BIOME) {
+            if(date == Core::undefinedIndex())
+                tempval = sum_map( f_frozen );
+            else
+                tempval = sum_map(f_frozen_tv.get(date));
+        } else {
+            H_ASSERT(has_biome( biome ), biome_error);
+            if(date == Core::undefinedIndex())
+                tempval = f_frozen.at(biome);
+            else
+                tempval = f_frozen_tv.get(date).at(biome);
+        }
+        returnval = unitval( tempval, U_UNITLESS );
     } else if( varNameParsed == D_NPP_FLUX0 ) {
       H_ASSERT(date == Core::undefinedIndex(), "Date not allowed for npp_flux0" );
       H_ASSERT(has_biome( biome ), biome_error);
@@ -663,6 +679,7 @@ void SimpleNbox::reset(double time) throw(h_exception)
 
     tempferts = tempferts_tv.get(time);
     tempfertd = tempfertd_tv.get(time);
+    f_frozen = f_frozen_tv.get(time);
 
     // Calculate derived quantities
     for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
@@ -1202,6 +1219,7 @@ void SimpleNbox::record_state(double t)
 
     tempfertd_tv.set(t, tempfertd);
     tempferts_tv.set(t, tempferts);
+    f_frozen_tv.set(t, f_frozen);
     H_LOG(logger, Logger::DEBUG) << "record_state: recorded tempferts = " << tempferts[SNBOX_DEFAULT_BIOME]
                                  << " at time= " << t << std::endl;
 
