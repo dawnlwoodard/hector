@@ -692,8 +692,26 @@ ATMOSPHERIC_CO2 <- function() {
 
 #' @rdname carboncycle
 #' @export
-NPP <- function() {
-    .Call('_hector_NPP', PACKAGE = 'hector')
+NPP <- function(biome = "") {
+    .Call('_hector_NPP', PACKAGE = 'hector', biome)
+}
+
+#' @rdname carboncycle
+#' @export
+RH <- function(biome = "") {
+    .Call('_hector_RH', PACKAGE = 'hector', biome)
+}
+
+#' @rdname carboncycle
+#' @export
+RH_DETRITUS <- function(biome = "") {
+    .Call('_hector_RH_DETRITUS', PACKAGE = 'hector', biome)
+}
+
+#' @rdname carboncycle
+#' @export
+RH_SOIL <- function(biome = "") {
+    .Call('_hector_RH_SOIL', PACKAGE = 'hector', biome)
 }
 
 #' @describeIn parameters Preindustrial CO2 concentration (\code{"ppmv CO2"})

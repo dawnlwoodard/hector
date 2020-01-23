@@ -253,6 +253,8 @@
 #define D_Q10_RH                "q10_rh"
 #define D_NPP                   "npp"
 #define D_RH                    "rh"
+#define D_RH_DETRITUS           "rh_det"
+#define D_RH_SOIL               "rh_soil"
 #define D_F_NPPV                "f_nppv"
 #define D_F_NPPD                "f_nppd"
 #define D_F_LITTERD             "f_litterd"

@@ -111,6 +111,11 @@ private:
     unitval_stringmap detritus_c;   //!< detritus pools, Pg C
     unitval_stringmap soil_c;       //!< soil pool, Pg C
 
+    // SimpleNBox fluxes:
+    // Net primary productivity of vegetation;
+    // Heterotrophic respiraiton of detritus and soil
+    unitval_stringmap NPP_veg, RH_det, RH_soil;
+
     // `permafrost_c` keeps track of C immobilized in permafrost. As permafrost
     // thaws, some of this C is transferred into the soil C pool. This pool is
     // biome-specific.
@@ -135,6 +140,9 @@ private:
     tvector<unitval_stringmap> detritus_c_tv; //!< Time series of biome-specific detritus carbon pools
     tvector<unitval_stringmap> soil_c_tv;     //!< Time series of biome-specific soil carbon pools
     tvector<unitval_stringmap> permafrost_c_tv;     //!< Time series of biome-specific permafrost carbon pools
+
+    // Time series versions of flux variables
+    tvector<unitval_stringmap> NPP_veg_tv, RH_det_tv, RH_soil_tv;
 
     tseries<unitval> residual_ts; //!< Time series of residual flux values
 

@@ -256,3 +256,14 @@ test_that('All "fraction" parameters can be set and retrieved', {
     expect_equivalent(as.list(out$value), fracs)
     shutdown(hc)
 })
+
+test_that('All flux variables can be retrieved', {
+    hc <- newcore(rcp45, suppresslogging = TRUE)
+    run(hc)
+    fluxvars <- c(NPP(), RH(), RH_DETRITUS(), RH_SOIL())
+    out_current <- fetchvars(hc, NA, fluxvars)
+    allyears <- seq(startdate(hc), enddate(hc))
+    out_dates <- fetchvars(hc, allyears, fluxvars)
+    expect_true(all(subset(out_dates, year > 2000)$value > 0))
+    expect_equivalent(subset(out_dates, year == max(allyears), -year), subset(out_current, select = -year))
+})

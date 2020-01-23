@@ -179,7 +179,10 @@ test_that("Split biomes, and modify parameters", {
   global_veg <- sendmessage(core, GETDATA(), VEG_C("default"), 0, NA, "")[["value"]]
   invisible(run(core))
   r_global <- fetchvars(core, 2000:2100)
-  r_global_pools <- fetchvars(core, 2000:2100, c(VEG_C("default"), DETRITUS_C("default"), SOIL_C("default")))
+  r_global_pools <- fetchvars(core, 2000:2100, c(
+    VEG_C("default"), DETRITUS_C("default"), SOIL_C("default"),
+    NPP("default"), RH("default"), RH_DETRITUS("default"), RH_SOIL("default")
+  ))
   r_global_pools$biome <- gsub("^(.*)\\.(.*)", "\\1", r_global_pools$variable)
   r_global_pools$variable <- gsub("^(.*)\\.(.*)", "\\2", r_global_pools$variable)
   r_global_totals <- aggregate(value ~ year + variable, data = r_global_pools, sum)
@@ -206,7 +209,11 @@ test_that("Split biomes, and modify parameters", {
   # each time step. This is a robust test!
   r_biome_data <- fetchvars(core, 2000:2100, c(VEG_C("non-pf"), VEG_C("permafrost"),
                                                DETRITUS_C("non-pf"), DETRITUS_C("permafrost"),
-                                               SOIL_C("non-pf"), SOIL_C("permafrost")),
+                                               SOIL_C("non-pf"), SOIL_C("permafrost"),
+                                               NPP("non-pf"), NPP("permafrost"),
+                                               RH("non-pf"), RH("permafrost"),
+                                               RH_SOIL("non-pf"), RH_SOIL("permafrost"),
+                                               RH_DETRITUS("non-pf"), RH_DETRITUS("permafrost")),
                             scenario = "default pf")
   r_biome_data$biome <- gsub("^(.*)\\.(.*)", "\\1", r_biome_data$variable)
   r_biome_data$variable <- gsub("^(.*)\\.(.*)", "\\2", r_biome_data$variable)

@@ -5,6 +5,9 @@
 \alias{LAND_CFLUX}
 \alias{ATMOSPHERIC_CO2}
 \alias{NPP}
+\alias{RH}
+\alias{RH_DETRITUS}
+\alias{RH_SOIL}
 \alias{ATMOSPHERIC_C}
 \alias{FFI_EMISSIONS}
 \alias{LUC_EMISSIONS}
@@ -20,7 +23,13 @@ LAND_CFLUX()
 
 ATMOSPHERIC_CO2()
 
-NPP()
+NPP(biome = "")
+
+RH(biome = "")
+
+RH_DETRITUS(biome = "")
+
+RH_SOIL(biome = "")
 
 ATMOSPHERIC_C()
 
@@ -73,6 +82,10 @@ These variables can be read using the \code{\link{GETDATA}} message type:
 \item{LAND_CFLUX}{Land carbon flux}
 \item{FFI_EMISSIONS}{Fossil fuel and industrial emissions}
 \item{LUC_EMISSIONS}{Land use change emissions}
+\item{NPP}{Net primary productivity (global, or by biome)}
+\item{RH}{Total heterotrophic respiration (global, or by biome)}
+\item{RH_DETRITUS}{Heterotrophic respiration from detritus (global, or by biome)}
+\item{RH_SOIL}{Heterotrophic respiration from soil (global, or by biome)}
 }
 }
 

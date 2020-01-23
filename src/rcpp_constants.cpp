@@ -863,8 +863,45 @@ return D_ATMOSPHERIC_CO2;
 //' @rdname carboncycle
 //' @export
 // [[Rcpp::export]]
-String NPP() {
-    return D_NPP;
+String NPP(String biome = "") {
+  if (biome == "") return D_NPP;
+  String out = biome;
+  out += ".";
+  out += D_NPP;
+  return out;
+}
+
+//' @rdname carboncycle
+//' @export
+// [[Rcpp::export]]
+String RH(String biome = "") {
+  if (biome == "") return D_RH;
+  String out = biome;
+  out += ".";
+  out += D_RH;
+  return out;
+}
+
+//' @rdname carboncycle
+//' @export
+// [[Rcpp::export]]
+String RH_DETRITUS(String biome = "") {
+  if (biome == "") return D_RH_DETRITUS;
+  String out = biome;
+  out += ".";
+  out += D_RH_DETRITUS;
+  return out;
+}
+
+//' @rdname carboncycle
+//' @export
+// [[Rcpp::export]]
+String RH_SOIL(String biome = "") {
+  if (biome == "") return D_RH_SOIL;
+  String out = biome;
+  out += ".";
+  out += D_RH_SOIL;
+  return out;
 }
 
 //' @describeIn parameters Preindustrial CO2 concentration (\code{"ppmv CO2"})

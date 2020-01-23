@@ -1156,12 +1156,46 @@ BEGIN_RCPP
 END_RCPP
 }
 // NPP
-String NPP();
-RcppExport SEXP _hector_NPP() {
+String NPP(String biome);
+RcppExport SEXP _hector_NPP(SEXP biomeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(NPP());
+    Rcpp::traits::input_parameter< String >::type biome(biomeSEXP);
+    rcpp_result_gen = Rcpp::wrap(NPP(biome));
+    return rcpp_result_gen;
+END_RCPP
+}
+// RH
+String RH(String biome);
+RcppExport SEXP _hector_RH(SEXP biomeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< String >::type biome(biomeSEXP);
+    rcpp_result_gen = Rcpp::wrap(RH(biome));
+    return rcpp_result_gen;
+END_RCPP
+}
+// RH_DETRITUS
+String RH_DETRITUS(String biome);
+RcppExport SEXP _hector_RH_DETRITUS(SEXP biomeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< String >::type biome(biomeSEXP);
+    rcpp_result_gen = Rcpp::wrap(RH_DETRITUS(biome));
+    return rcpp_result_gen;
+END_RCPP
+}
+// RH_SOIL
+String RH_SOIL(String biome);
+RcppExport SEXP _hector_RH_SOIL(SEXP biomeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< String >::type biome(biomeSEXP);
+    rcpp_result_gen = Rcpp::wrap(RH_SOIL(biome));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1779,7 +1813,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_hector_CO3_HL", (DL_FUNC) &_hector_CO3_HL, 0},
     {"_hector_LAND_CFLUX", (DL_FUNC) &_hector_LAND_CFLUX, 0},
     {"_hector_ATMOSPHERIC_CO2", (DL_FUNC) &_hector_ATMOSPHERIC_CO2, 0},
-    {"_hector_NPP", (DL_FUNC) &_hector_NPP, 0},
+    {"_hector_NPP", (DL_FUNC) &_hector_NPP, 1},
+    {"_hector_RH", (DL_FUNC) &_hector_RH, 1},
+    {"_hector_RH_DETRITUS", (DL_FUNC) &_hector_RH_DETRITUS, 1},
+    {"_hector_RH_SOIL", (DL_FUNC) &_hector_RH_SOIL, 1},
     {"_hector_PREINDUSTRIAL_CO2", (DL_FUNC) &_hector_PREINDUSTRIAL_CO2, 0},
     {"_hector_ATMOSPHERIC_C", (DL_FUNC) &_hector_ATMOSPHERIC_C, 0},
     {"_hector_FFI_EMISSIONS", (DL_FUNC) &_hector_FFI_EMISSIONS, 0},
