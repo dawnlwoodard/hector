@@ -64,7 +64,11 @@ test_that("Hector runs with multiple biomes created via INI file.", {
     "boreal.f_nppd = 0.60",
     "tropical.f_nppd = 0.60",
     "boreal.f_litterd = 0.98",
-    "tropical.f_litterd = 0.98"
+    "tropical.f_litterd = 0.98",
+    # Next parameters have default values, so don't have to set them for every
+    # biome.
+    "boreal.warmingfactor = 2.5",
+    "boreal.rh_ch4_frac = 0.001"
   ), after = isnbox)
 
   # Make csv paths absolute (otherwise, they search in the tempfile directory)

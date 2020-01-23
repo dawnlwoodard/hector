@@ -157,7 +157,6 @@
 #define D_PREINDUSTRIAL_CH4     "M0"
 #define D_RF_CH4                "FCH4"
 #define D_EMISSIONS_CH4         "CH4_emissions"
-#define D_RH_CH4_FRAC           "RH_CH4_fraction"
 #define D_NATURAL_CH4           "CH4N"
 #define D_CONVERSION_CH4        "UC_CH4"
 #define D_LIFETIME_SOIL         "Tsoil"
@@ -266,6 +265,8 @@
 //#define D_SIGMA                 "sigma"
 #define D_WARMINGFACTOR         "warmingfactor"
 #define D_F_FROZEN              "f_frozen"
+#define D_RH_CH4                "rh_ch4"
+#define D_RH_CH4_FRAC           "rh_ch4_frac"
 
 // slr component
 #define D_SL_RC                 "sl_rc"

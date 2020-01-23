@@ -60,7 +60,6 @@ void CH4Component::init( Core* coreptr ) {
     // ...and what input data that we can accept
     core->registerInput(D_EMISSIONS_CH4, getComponentName());
     core->registerInput(D_NATURAL_CH4, getComponentName());
-    core->registerInput(D_RH_CH4_FRAC, getComponentName());
 }
 
 //------------------------------------------------------------------------------
@@ -109,9 +108,6 @@ void CH4Component::setData( const string& varName,
          } else if( varName == D_NATURAL_CH4 ) {
             H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed" );
             CH4N = data.getUnitval( U_TG_CH4 );
-         } else if( varName == D_RH_CH4_FRAC ) {
-            H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed for RH CH4 fraction" );
-            rh_ch4_frac = data.getUnitval( U_UNITLESS );
          }
 		else {
             H_THROW( "Unknown variable name while parsing " + getComponentName() + ": "
@@ -144,8 +140,7 @@ void CH4Component::run( const double runToDate ) throw ( h_exception ) {
 
     // Some CH4 emissions are a fixed (small) fraction of heterotrophic respiration (RH)
     #define PG_C_TO_TG_CH4 (1000.0 * 16.04 / 12.01)
-    const double rh_total = core->sendMessage( M_GETDATA, D_RH ).value( U_PGC_YR );
-    const double rh_ch4 = rh_total * rh_ch4_frac * PG_C_TO_TG_CH4;
+    const double rh_ch4 = core->sendMessage( M_GETDATA, D_RH_CH4 ).value( U_PGC_YR ) * PG_C_TO_TG_CH4;
 
     // Additional, background CH4 natural emissions
     const double ch4n =  CH4N.value( U_TG_CH4 );

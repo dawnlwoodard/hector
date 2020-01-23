@@ -205,6 +205,8 @@ private:
     
     double_stringmap q10_rh;            //!< Q10 for heterotrophic respiration (unitless)
 
+    double_stringmap rh_ch4_frac;       // Fraction of RH that is CH4
+
     /*****************************************************************
      * Functions computing sub-elements of the carbon cycle
      *****************************************************************/
@@ -215,6 +217,9 @@ private:
     unitval rh_fsa( std::string biome ) const;  //!< calculates current RH from soil for a biome
     unitval rh( std::string biome ) const;      //!< calculates current RH for a biome
     unitval sum_rh() const;                     //!< calculates current RH, global total
+
+    unitval rh_ch4( std::string biome ) const;  //!< calculates methane RH for a biome
+    unitval sum_rh_ch4( ) const;                //!< calculates methane RH, global total
     
     /*****************************************************************
      * Private helper functions

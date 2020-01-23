@@ -58,6 +58,8 @@ void SimpleNbox::init( Core* coreptr ) {
     f_frozen[ SNBOX_DEFAULT_BIOME ] = 1.0;
     new_thaw[ SNBOX_DEFAULT_BIOME ] = 0.0;
 
+    rh_ch4_frac[ SNBOX_DEFAULT_BIOME ] = 0.0;
+
     // Initialize the `biome_list` with just "global"
     biome_list.push_back( SNBOX_DEFAULT_BIOME );
 
@@ -78,6 +80,7 @@ void SimpleNbox::init( Core* coreptr ) {
     core->registerCapability( D_RH, getComponentName() );
     core->registerCapability( D_RH_DETRITUS, getComponentName() );
     core->registerCapability( D_RH_SOIL, getComponentName() );
+    core->registerCapability( D_RH_CH4, getComponentName() );
     core->registerCapability( D_F_FROZEN, getComponentName() );
 
     // Register our dependencies
@@ -100,6 +103,7 @@ void SimpleNbox::init( Core* coreptr ) {
     core->registerInput(D_F_LITTERD, getComponentName());
     core->registerInput(D_F_LUCV, getComponentName());
     core->registerInput(D_F_LUCD, getComponentName());
+    core->registerInput(D_RH_CH4_FRAC, getComponentName());
 }
 
 //------------------------------------------------------------------------------
@@ -296,6 +300,10 @@ void SimpleNbox::setData( const std::string &varName,
             H_ASSERT( data.date == Core::undefinedIndex() , "date not allowed" );
             q10_rh[ biome ] = data.getUnitval(U_UNITLESS);
         }
+        else if( varNameParsed == D_RH_CH4_FRAC ) {
+           H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed for RH CH4 fraction" );
+           rh_ch4_frac[ biome ] = data.getUnitval( U_UNITLESS );
+        }
 
         else {
             H_LOG( logger, Logger::DEBUG ) << "Unknown variable " << varName << std::endl;
@@ -430,6 +438,12 @@ void SimpleNbox::prepareToRun() throw( h_exception )
             H_LOG( logger, Logger::NOTICE ) << "No warmingfactor set for biome '" << biome << "'. " <<
                 "Setting to default value = 1.0" << std::endl;
             warmingfactor[ biome ] = 1.0;
+        }
+
+        if ( !rh_ch4_frac.count( biome )) {
+            H_LOG( logger, Logger::NOTICE ) << "No RH CH4 fraction set for biome '" << biome << "'. " <<
+                "Setting to default value = 0.0" << std::endl;
+            rh_ch4_frac[ biome ] = 0.0;
         }
 
     }
@@ -703,6 +717,10 @@ unitval SimpleNbox::getData(const std::string& varName,
             else
                 returnval = RH_soil_tv.get(date).at(biome);
         }
+    } else if ( varNameParsed == D_RH_CH4 ) {
+        H_ASSERT( date == Core::undefinedIndex() , "date not allowed for CH4 from RH" );
+        returnval = sum_rh_ch4();
+
     }else {
         H_THROW( "Caller is requesting unknown variable: " + varName );
     }
@@ -994,6 +1012,28 @@ unitval SimpleNbox::sum_rh() const
     unitval total( 0.0, U_PGC_YR );
     for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
         total = total + rh( *it );
+    }
+    return total;
+}
+
+//------------------------------------------------------------------------------
+/*! \brief      Compute heterotrophic respiration methane component
+ *  \returns    Current annual heterotrophic respiration, as CH4
+ */
+unitval SimpleNbox::rh_ch4( std::string biome ) const
+{
+    return rh( biome ) * rh_ch4_frac.at(biome);
+}
+
+//------------------------------------------------------------------------------
+/*! \brief      Compute global heterotrophic CH4 respiration
+ *  \returns    Annual CH4 RH summed across all biomes
+ */
+unitval SimpleNbox::sum_rh_ch4() const
+{
+    unitval total( 0.0, U_PGC_YR );
+    for ( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
+        total = total + rh_ch4( *it );
     }
     return total;
 }
@@ -1360,6 +1400,7 @@ void SimpleNbox::createBiome(const std::string& biome)
     f_nppv[ biome ] = f_nppv[ last_biome ];
     f_nppd[ biome ] = f_nppd[ last_biome ];
     f_litterd[ biome ] = f_litterd[ last_biome ];
+    rh_ch4_frac[ biome ] = rh_ch4_frac[ last_biome ];
 
     // Add to end of biome list
     biome_list.push_back(biome);
@@ -1385,6 +1426,7 @@ void SimpleNbox::deleteBiome(const std::string& biome) // Throw an error if the 
     f_nppv.erase(biome);
     f_nppd.erase(biome);
     f_litterd.erase(biome);
+    rh_ch4_frac.erase(biome);
 
     // C pools
     veg_c.erase( biome );
@@ -1444,6 +1486,8 @@ void SimpleNbox::renameBiome(const std::string& oldname, const std::string& newn
     f_nppd.erase(oldname);
     f_litterd[ newname ] = f_litterd.at( oldname );
     f_litterd.erase(oldname);
+    rh_ch4_frac[ newname ] = rh_ch4_frac.at( oldname );
+    rh_ch4_frac.erase(oldname);
 
     H_LOG(logger, Logger::DEBUG) << "Transferring C from biome '" << oldname <<
         "' to '" << newname << "'." << std::endl;

@@ -592,13 +592,6 @@ return D_NATURAL_CH4;
 //' @rdname methane
 //' @export
 // [[Rcpp::export]]
-String RH_CH4_FRAC() {
-return D_RH_CH4_FRAC;
-}
-
-//' @rdname methane
-//' @export
-// [[Rcpp::export]]
 String LIFETIME_SOIL() {
 return D_LIFETIME_SOIL;
 }
@@ -1005,6 +998,17 @@ String F_LITTERD(String biome = "") {
   String out = biome;
   out += ".";
   out += D_F_LITTERD;
+  return out;
+}
+
+//' @describeIn parameters Fraction of RH that is also respired as methane
+//' @export
+// [[Rcpp::export]]
+String RH_CH4_FRAC(String biome = "") {
+  if (biome == "") return D_RH_CH4_FRAC;
+  String out = biome;
+  out += ".";
+  out += D_RH_CH4_FRAC;
   return out;
 }
 

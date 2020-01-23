@@ -470,12 +470,6 @@ NATURAL_CH4 <- function() {
 
 #' @rdname methane
 #' @export
-RH_CH4_FRAC <- function() {
-    .Call('_hector_RH_CH4_FRAC', PACKAGE = 'hector')
-}
-
-#' @rdname methane
-#' @export
 LIFETIME_SOIL <- function() {
     .Call('_hector_LIFETIME_SOIL', PACKAGE = 'hector')
 }
@@ -779,6 +773,12 @@ F_NPPD <- function(biome = "") {
 #' @export
 F_LITTERD <- function(biome = "") {
     .Call('_hector_F_LITTERD', PACKAGE = 'hector', biome)
+}
+
+#' @describeIn parameters Fraction of RH that is also respired as methane
+#' @export
+RH_CH4_FRAC <- function(biome = "") {
+    .Call('_hector_RH_CH4_FRAC', PACKAGE = 'hector', biome)
 }
 
 #' @describeIn parameters LUC fraction to vegetation (\code{"(unitless)"})
