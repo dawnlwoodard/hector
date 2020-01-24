@@ -193,7 +193,10 @@ unitval CH4Component::getData( const std::string& varName,
         returnval = CH4_emissions.get( date );
     } else if( varName == D_CONSTRAINT_CH4 ) {
         H_ASSERT(  date != Core::undefinedIndex(), "Date not allowed for CH4 constraint" );
-        returnval = CH4_constrain.get( date );
+        if ( CH4_constrain.exists( date ) )
+            returnval = CH4_constrain.get( date );
+        else
+            returnval = unitval( MISSING_FLOAT, U_PPBV_CH4 );
     } else {
         H_THROW( "Caller is requesting unknown variable: " + varName );
     }
