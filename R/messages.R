@@ -110,3 +110,34 @@ setvar <- function(core, dates, var, values, unit)
 
     invisible(NULL)
 }
+
+
+#' Fetch all available variables from a running Hector core
+#'
+#' This function is similar to fetchvars, except it fetches all available
+#' Hector variables, including exogenous inputs (e.g., emissions & pre-industrial
+#' concentrations), parameters (e.g., alpha, beta, ECS), and output
+#' variables (e.g., concentrations & forcings). Variables with and without
+#' timeseries capabilities are supported.
+#'
+#' @param core Hector core object
+#' @param dates Vector of dates, optional. Defines the time span to retrieve timeseries
+#' variables from. If not provided, the Hector core object's start and end years will be used.
+#' @param scenario Optional scenario name. If not specified, the name of the Hector
+#' core object will be used.
+#' @return Dataframe containing all Hector variables
+#' @family main user interface functions
+#' @export
+fetchvars_all <- function(core, dates=NULL, scenario=NULL)
+{
+
+    # Get output for variables that do use the date param
+    rslt_date <- fetchvars(core, dates, vars_date, scenario)
+
+    # Get variables that DO NOT use date arg
+    rslt_nodate <- fetchvars(core, NA, vars_nodate, scenario)
+
+    rslt <- rbind(rslt_date, rslt_nodate)
+
+    invisible(rslt)
+}

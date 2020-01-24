@@ -830,7 +830,6 @@ return D_CONSTRAINT_N2O;
 }
 
 
-
 /* O3 component */
 //' @describeIn concentrations Preindustrial ozone concentration
 //' @export

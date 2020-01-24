@@ -20,7 +20,7 @@
 #include "avisitor.hpp"
 
 namespace Hector {
-  
+
 using namespace std;
 
 //------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ void HalocarbonComponent::init( Core* coreptr ) {
     emissions.name = myGasName;
     molarMass = 0.0;
     H0.set( 0.0, U_PPTV );      //! Default is no preindustrial, but user can override
-  
+
     //! \remark Inform core that we can provide forcing data
     core->registerCapability( D_RF_PREFIX+myGasName, getComponentName() );
     //! \remark Inform core that we can provide concentrations
@@ -76,19 +76,19 @@ unitval HalocarbonComponent::sendMessage( const std::string& message,
                                          const message_data info ) throw ( h_exception )
 {
     unitval returnval;
-    
+
     if( message==M_GETDATA ) {          //! Caller is requesting data
         return getData( datum, info.date );
-        
+
     } else if( message==M_SETDATA ) {   //! Caller is requesting to set data
         setData( datum, info );
         //TODO: change core so that parsing is routed through sendMessage
         //TODO: make setData private
-        
+
     } else {                        //! We don't handle any other messages
         H_THROW( "Caller sent unknown message: "+message );
     }
-    
+
     return returnval;
 }
 
@@ -98,7 +98,7 @@ void HalocarbonComponent::setData( const string& varName,
                                    const message_data& data ) throw ( h_exception )
 {
     H_LOG( logger, Logger::DEBUG ) << "Setting " << varName << "[" << data.date << "]=" << data.value_str << std::endl;
-    
+
     try {
         const string emiss_var_name = myGasName + EMISSIONS_EXTENSION;
         const string conc_var_name = myGasName + CONC_CONSTRAINT_EXTENSION;
@@ -140,10 +140,10 @@ void HalocarbonComponent::prepareToRun() throw ( h_exception ) {
     H_ASSERT( tau != -1 && tau != 0, "tau has bad value" );
     H_ASSERT( rho.units() != U_UNDEFINED, "rho has undefined units" );
     H_ASSERT( molarMass > 0, "molarMass must be >0" );
-   
+
     Ha_ts.set(oldDate,H0);
 
-    
+
     //! \remark concentration values will not be allowed to interpolate beyond years already read in
     //    concentration.allowPartialInterp( true );
 }
@@ -183,21 +183,21 @@ void HalocarbonComponent::run( const double runToDate ) throw ( h_exception ) {
     hc_forcing.set( runToDate, rf );
 
     // Update time counter.
-    oldDate = runToDate; 
+    oldDate = runToDate;
 }
 
 //------------------------------------------------------------------------------
 // documentation is inherited
 unitval HalocarbonComponent::getData( const std::string& varName,
                                      const double date ) throw ( h_exception ) {
-    
+
     unitval returnval;
     double getdate = date;      // will be used for any variable where a date is allowed.
     if(getdate == Core::undefinedIndex()) {
         // If no date specified, return the last computed date
         getdate = oldDate;
     }
-    
+
     if( varName == D_RF_PREFIX+myGasName ) {
         returnval = hc_forcing.get( getdate );
     }
@@ -223,7 +223,7 @@ unitval HalocarbonComponent::getData( const std::string& varName,
     else {
         H_THROW( "Caller is requesting unknown variable: " + varName );
     }
-    
+
     return returnval;
 }
 
@@ -238,7 +238,7 @@ void HalocarbonComponent::reset(double time) throw(h_exception)
         << getComponentName() << " reset to time= " << time << "\n";
 }
 
-    
+
 //------------------------------------------------------------------------------
 // documentation is inherited
 void HalocarbonComponent::shutDown() {
@@ -267,16 +267,16 @@ void HalocarbonComponent::accept( AVisitor* visitor ) {
  unitval HalocarbonComponent::getChangeInConcentration( unitval currConcentration, double currDate ) const
  {
  #define AtmosphereDryAirConstant 1.8
- 
+
  const double timestep = 1.0;
  const double alpha = 1 / tau;
- 
+
  unitval cumulativeEmissMol;
  cumulativeEmissMol.set( emissions.get( currDate ).value( U_GG ) / molarMass * timestep, U_GMOL );
- 
+
  unitval concFromEmiss;
  concFromEmiss.set( cumulativeEmissMol.value( U_GMOL ) / ( 0.1 * AtmosphereDryAirConstant ), U_PPTV );
- 
+
  return currConcentration * -alpha + concFromEmiss;
  }
  */
