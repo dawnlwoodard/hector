@@ -230,7 +230,7 @@ test_that('Test RF output.', {
 })
 
 test_that('Test fetchvars_all.', {
-    year_range <- 1745:2100
+    year_range <- 1750:2100
 
     core <- newcore(file.path(inputdir, 'hector_rcp45.ini'), suppresslogging = TRUE)
     run(core, max(year_range))
