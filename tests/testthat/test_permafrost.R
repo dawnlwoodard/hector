@@ -32,11 +32,6 @@ test_that("Permafrost submodel works from INI file", {
   pf_results <- fetchvars(hc, yrs, variables, scenario = "permafrost")
   pf_soil <- fetchvars(hc, yrs, SOIL_C(), scenario = "permafrost")
 
-  # Permafrost pool should always be shrinking, never growing
-  pf_pf <- fetchvars(hc, yrs, PERMAFROST_C(),
-                     scenario = "permafrost")[["value"]]
-  expect_true(all(diff(pf_pf) <= 0))
-
   hc2 <- newcore(rcp45)
   invisible(run(hc2))
   orig_results <- fetchvars(hc2, yrs, variables, scenario = "default")
