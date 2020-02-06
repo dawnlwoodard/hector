@@ -214,7 +214,9 @@ private:
     unitval npp(std::string biome, double time = Core::undefinedIndex()) const; //!< calculates NPP for a biome
     unitval sum_npp(double time = Core::undefinedIndex()) const; //!< calculates NPP, global total
     unitval rh_fda( std::string biome ) const;  //!< calculates current RH from detritus for a biome
+    unitval rh_fda_ch4( std::string biome ) const;  //!< calculates current methane RH from detritus for a biome
     unitval rh_fsa( std::string biome ) const;  //!< calculates current RH from soil for a biome
+    unitval rh_fsa_ch4( std::string biome ) const;  //!< calculates current methane RH from soil for a biome
     unitval rh( std::string biome ) const;      //!< calculates current RH for a biome
     unitval sum_rh() const;                     //!< calculates current RH, global total
 

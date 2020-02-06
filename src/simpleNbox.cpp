@@ -988,6 +988,16 @@ unitval SimpleNbox::rh_fda( std::string biome ) const
 }
 
 //------------------------------------------------------------------------------
+/*! \brief      Compute detritus component of annual heterotrophic respiration - CH4
+ *  \returns    current detritus component of annual heterotrophic respiration - CH4
+ */
+unitval SimpleNbox::rh_fda_ch4( std::string biome ) const
+{
+    unitval dflux( detritus_c.at( biome ).value( U_PGC ) * 0.25, U_PGC_YR );
+    return dflux * tempfertd.at( biome ) * (rh_ch4_frac.at( biome ));
+}
+
+//------------------------------------------------------------------------------
 /*! \brief      Compute soil component of annual heterotrophic respiration
  *  \returns    current soil component of annual heterotrophic respiration
  */
@@ -995,6 +1005,16 @@ unitval SimpleNbox::rh_fsa( std::string biome ) const
 {
     unitval soilflux( soil_c.at( biome ).value( U_PGC ) * 0.02, U_PGC_YR );
     return soilflux * tempferts.at( biome ) * (1.0 - rh_ch4_frac.at( biome ));
+}
+
+//------------------------------------------------------------------------------
+/*! \brief      Compute soil component of annual heterotrophic respiration
+ *  \returns    current soil component of annual heterotrophic respiration
+ */
+unitval SimpleNbox::rh_fsa_ch4( std::string biome ) const
+{
+    unitval soilflux( soil_c.at( biome ).value( U_PGC ) * 0.02, U_PGC_YR );
+    return soilflux * tempferts.at( biome ) * rh_ch4_frac.at( biome );
 }
 
 //------------------------------------------------------------------------------
@@ -1006,6 +1026,16 @@ unitval SimpleNbox::rh( std::string biome ) const
     // Heterotrophic respiration is the sum of fluxes from detritus and soil
     return rh_fda( biome ) + rh_fsa( biome );
 }
+
+//------------------------------------------------------------------------------
+/*! \brief      Compute heterotrophic respiration methane component
+ *  \returns    Current annual heterotrophic respiration, as CH4
+ */
+unitval SimpleNbox::rh_ch4( std::string biome ) const
+{
+    return rh_fda_ch4( biome ) + rh_fsa_ch4( biome );
+}
+
 
 //------------------------------------------------------------------------------
 /*! \brief      Compute global heterotrophic respiration
@@ -1020,16 +1050,7 @@ unitval SimpleNbox::sum_rh() const
     return total;
 }
 
-//------------------------------------------------------------------------------
-/*! \brief      Compute heterotrophic respiration methane component
- *  \returns    Current annual heterotrophic respiration, as CH4
- */
-unitval SimpleNbox::rh_ch4( std::string biome ) const
-{
-    // First term cancels out the rh_co2 fraction to get total C RH
-    // Second term then applies the RH fraction
-    return rh( biome ) / (1.0 - rh_ch4_frac.at(biome)) * rh_ch4_frac.at(biome);
-}
+
 
 //------------------------------------------------------------------------------
 /*! \brief      Compute global heterotrophic CH4 respiration
@@ -1072,6 +1093,9 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
     unitval rh_fda_current( 0.0, U_PGC_YR );
     unitval rh_fsa_current( 0.0, U_PGC_YR );
 
+    unitval rh_fda_ch4_current( 0.0, U_PGC_YR );
+    unitval rh_fsa_ch4_current( 0.0, U_PGC_YR );
+
     for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
         std::string biome = *it;
         // NPP is scaled by CO2 from preindustrial value
@@ -1080,10 +1104,15 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
         npp_fav = npp_fav + npp_biome * f_nppv.at( biome );
         npp_fad = npp_fad + npp_biome * f_nppd.at( biome );
         npp_fas = npp_fas + npp_biome * (1 - f_nppv.at( biome ) - f_nppd.at( biome ));
+
         rh_fda_current = rh_fda_current + rh_fda( biome );
         rh_fsa_current = rh_fsa_current + rh_fsa( biome );
+
+        rh_fda_ch4_current = rh_fda_ch4_current + rh_fda_ch4( biome );
+        rh_fsa_ch4_current = rh_fsa_ch4_current + rh_fsa_ch4( biome );
     }
     unitval rh_current = rh_fda_current + rh_fsa_current;
+    unitval rh_ch4_current = rh_fsa_ch4_current + rh_fda_ch4_current;
 
     // Detritus flux comes from the vegetation pool
     // TODO: these values should use the c[] pools passed in by solver!
@@ -1147,6 +1176,12 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
         + ch4ox_current.value( U_PGC_YR )
         - atmosocean_flux.value( U_PGC_YR )
         - npp_current.value( U_PGC_YR )
+        // HACK: For mass balance purposes, dump both RH{CO2} and RH{CH4} into
+        // the atmosphere. Effectivel, this means that CH4 is emitted on top of
+        // existing CO2 -- i.e. more CH4 emissions does not mean less CO2
+        // emissions from RH). The correct solution is to have a separate, 8th
+        // naturally-emitted CH4 box.
+        + rh_ch4_current.value( U_PGC_YR )
         + rh_current.value( U_PGC_YR );
     dcdt[ SNBOX_VEG ] = // change in vegetation pool
         npp_fav.value( U_PGC_YR )
@@ -1157,6 +1192,7 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
         + litter_fvd.value( U_PGC_YR )
         - detsoil_flux.value( U_PGC_YR )
         - rh_fda_current.value( U_PGC_YR )
+        - rh_fda_ch4_current.value( U_PGC_YR )
         - luc_fda.value( U_PGC_YR );
     dcdt[ SNBOX_SOIL ] = // change in soil pool
         npp_fas.value( U_PGC_YR )
@@ -1164,6 +1200,7 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
         + detsoil_flux.value( U_PGC_YR )
         + permafrost_thaw_c.value( U_PGC_YR )
         - rh_fsa_current.value( U_PGC_YR )
+        - rh_fsa_ch4_current.value( U_PGC_YR )
         - luc_fsa.value( U_PGC_YR );
     dcdt[ SNBOX_OCEAN ] = // change in ocean pool
         atmosocean_flux.value( U_PGC_YR );
