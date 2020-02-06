@@ -564,7 +564,7 @@ unitval SimpleNbox::getData(const std::string& varName,
         returnval = unitval(q10_rh.at( biome ), U_UNITLESS);
     } else if( varNameParsed == D_LAND_CFLUX ) {
         H_ASSERT( date == Core::undefinedIndex(), "Date not allowed for atm-land flux" );
-        returnval = sum_npp() - sum_rh() - lucEmissions.get( ODEstartdate );
+        returnval = sum_npp() - sum_rh() - sum_rh_ch4() - lucEmissions.get( ODEstartdate );
 
     } else if( varNameParsed == D_RF_T_ALBEDO ) {
         H_ASSERT( date != Core::undefinedIndex(), "Date required for albedo forcing" );
@@ -1348,8 +1348,8 @@ void SimpleNbox::record_state(double t)
         std::string biome = *it;
         if (!in_spinup) {
             NPP_veg[ biome ] = npp( biome );
-            RH_det[ biome ] = rh_fda( biome );
-            RH_soil[ biome ] = rh_fsa( biome );
+            RH_det[ biome ] = rh_fda( biome ) + rh_fda_ch4( biome );
+            RH_soil[ biome ] = rh_fsa( biome ) + rh_fsa_ch4( biome );
         } else {
             NPP_veg[ biome ] = unitval(0.0, U_PGC_YR);
             RH_det[ biome ] = unitval(0.0, U_PGC_YR);
