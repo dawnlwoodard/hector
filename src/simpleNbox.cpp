@@ -21,6 +21,10 @@
 #include <algorithm>
 #include <math.h>
 
+#ifdef USE_RCPP
+#include <Rcpp.h>
+#endif
+
 namespace Hector {
 
 using namespace boost;
@@ -1244,21 +1248,20 @@ void SimpleNbox::slowparameval( double t, const double c[] )
             // Currently, these are calibrated to produce a 0.172 / year slope from
             // 0.8 to 4 degrees C, which was the linear form of this in Kessler.
             // TODO: These should be settable parameters
-            double pf_Q = 2.371;
-            double pf_B = -0.676;
-            double pf_pow = -3.685;
+            double pf_mu = 1.258;
+            double pf_sigma = 0.618;
 
             new_thaw[ biome ] = 0.0;
-            // Only do this math if we have any permafrost C. Otherwise, we can skip it.
-            if (Tgav_biome > 0 & permafrost_c[ biome ] > unitval(0.0, U_PGC)) {
-                double f_frozen_current = 1 - pow(1.0 + pf_Q * exp(pf_B * Tgav_biome), pf_pow);
+            if (permafrost_c[ biome ] > unitval(0.0, U_PGC)) {
+#ifdef USE_RCPP
+                double f_frozen_current = R::plnorm(Tgav_biome, pf_mu, pf_sigma, 0, 0);
+#else
+                H_THROW("Permafrost C calculation requires R math library ",
+                        "for the `plnorm` function. Please compile with `-DUSE_RCPP` ",
+                        "and be sure to link to Rcpp headers and libraries.")
+#endif
                 new_thaw[ biome ] = f_frozen[ biome ] - f_frozen_current;
-                // We can lose permafrost, but not re-gain it.
-                if (new_thaw[ biome ] > 0) {
-                    f_frozen[ biome ] = f_frozen_current;
-                } else {
-                    new_thaw[ biome ] = 0.0;
-                }
+                f_frozen[ biome ] = f_frozen_current;
             }
 
             // Soil warm very slowly relative to the atmosphere
