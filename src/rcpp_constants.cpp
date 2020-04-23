@@ -1099,6 +1099,15 @@ String NPP_FLUX0(String biome = "") {
   return out;
 }
 
+
+//' @rdname carboncycle
+//' @export
+// [[Rcpp::export]]
+String PF_SIGMA() {
+    return D_PF_SIGMA;
+}
+
+
 /* SLR component */
 // // Apparently not yet implemented
 // //' @export
@@ -1240,7 +1249,7 @@ String HEAT_FLUX() {
 return D_HEAT_FLUX;
 }
 
-//' @describeIn msgtype Character used to separate biome from variable name 
+//' @describeIn msgtype Character used to separate biome from variable name
 // [[Rcpp::export]]
 String BIOME_SPLIT_CHAR() {
 return SNBOX_PARSECHAR;
