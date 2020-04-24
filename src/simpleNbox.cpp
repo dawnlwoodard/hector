@@ -229,11 +229,7 @@ void SimpleNbox::setData( const std::string &varName,
         else if( varNameParsed == D_PERMAFROSTC ){
             permafrost_c[ biome ] = data.getUnitval( U_PGC );
             if ( data.date != Core::undefinedIndex()) {
-                // HACK: Reset the mass balance -- DWIM.
-                unitval delta_c = permafrost_c_tv.get(data.date).at(biome) - data.getUnitval( U_PGC );
-                earth_c = earth_c_ts.get(data.date) + delta_c;
                 permafrost_c_tv.set(data.date, permafrost_c);
-                earth_c_ts.set(data.date, earth_c);
             }
         }
 
