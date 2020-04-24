@@ -267,3 +267,9 @@ test_that('All flux variables can be retrieved', {
     expect_true(all(subset(out_dates, year > 2000)$value > 0))
     expect_equivalent(subset(out_dates, year == max(allyears), -year), subset(out_current, select = -year))
 })
+
+test_that('Permafrost parameters',{
+
+    expect_true(is.character(PF_SIGMA()))
+
+})

@@ -267,6 +267,7 @@
 #define D_F_FROZEN              "f_frozen"
 #define D_RH_CH4                "rh_ch4"
 #define D_RH_CH4_FRAC           "rh_ch4_frac"
+#define D_PF_SIGMA              "pf_sigma"
 
 // slr component
 #define D_SL_RC                 "sl_rc"
