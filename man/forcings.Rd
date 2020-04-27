@@ -89,11 +89,16 @@ instead of the more natural looking \code{GETDATA}.
 \seealso{
 \link{haloforcings} for forcings from halocarbons.
 
-Other capability identifiers: \code{\link{carboncycle}},
-  \code{\link{concentrations}}, \code{\link{emissions}},
-  \code{\link{haloemiss}}, \code{\link{haloforcings}},
-  \code{\link{methane}}, \code{\link{ocean}},
-  \code{\link{parameters}}, \code{\link{so2}},
-  \code{\link{temperature}}
+Other capability identifiers: 
+\code{\link{carboncycle}},
+\code{\link{concentrations}},
+\code{\link{emissions}},
+\code{\link{haloemiss}},
+\code{\link{haloforcings}},
+\code{\link{methane}},
+\code{\link{ocean}},
+\code{\link{parameters}},
+\code{\link{so2}},
+\code{\link{temperature}}
 }
 \concept{capability identifiers}

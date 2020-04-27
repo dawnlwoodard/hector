@@ -25,6 +25,7 @@ create_biome <- function(core, biome,
                          beta = 0.36,
                          q10_rh = 2.0,
                          rh_ch4_frac = 0.0,
+                         pf_sigma = 0.618,
                          f_nppv = 0.35,
                          f_nppd = 0.60,
                          f_litterd = 0.98) {
@@ -38,6 +39,7 @@ create_biome <- function(core, biome,
   setvar(core, NA, BETA(biome), beta, NA)
   setvar(core, NA, Q10_RH(biome), q10_rh, NA)
   setvar(core, NA, RH_CH4_FRAC(biome), rh_ch4_frac, NA)
+  setvar(core, NA, PF_SIGMA(biome), pf_sigma, "DegC")
   setvar(core, NA, F_NPPV(biome), f_nppv, NA)
   setvar(core, NA, F_NPPD(biome), f_nppd, NA)
   setvar(core, NA, F_LITTERD(biome), f_litterd, NA)

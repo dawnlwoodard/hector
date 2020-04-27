@@ -1012,6 +1012,17 @@ String RH_CH4_FRAC(String biome = "") {
   return out;
 }
 
+//' @describeIn parameters Standard deviation parameter for permafrost-temp relationship
+//' @export
+// [[Rcpp::export]]
+String PF_SIGMA(String biome = "") {
+    if (biome == "") return D_PF_SIGMA;
+    String out = biome;
+    out += ".";
+    out += D_PF_SIGMA;
+    return out;
+}
+
 //' @describeIn parameters LUC fraction to vegetation (\code{"(unitless)"})
 //' @export
 // [[Rcpp::export]]

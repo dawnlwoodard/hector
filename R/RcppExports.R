@@ -781,6 +781,12 @@ RH_CH4_FRAC <- function(biome = "") {
     .Call('_hector_RH_CH4_FRAC', PACKAGE = 'hector', biome)
 }
 
+#' @describeIn parameters Standard deviation parameter for permafrost-temp relationship
+#' @export
+PF_SIGMA <- function(biome = "") {
+    .Call('_hector_PF_SIGMA', PACKAGE = 'hector', biome)
+}
+
 #' @describeIn parameters LUC fraction to vegetation (\code{"(unitless)"})
 #' @export
 F_LUCV <- function() {

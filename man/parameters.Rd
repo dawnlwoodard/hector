@@ -9,6 +9,8 @@
 \alias{F_NPPV}
 \alias{F_NPPD}
 \alias{F_LITTERD}
+\alias{RH_CH4_FRAC}
+\alias{PF_SIGMA}
 \alias{F_LUCV}
 \alias{F_LUCD}
 \alias{ECS}
@@ -30,6 +32,10 @@ F_NPPV(biome = "")
 F_NPPD(biome = "")
 
 F_LITTERD(biome = "")
+
+RH_CH4_FRAC(biome = "")
+
+PF_SIGMA(biome = "")
 
 F_LUCV()
 
@@ -74,6 +80,10 @@ mass).
 
 \item \code{F_LITTERD}: Litter fraction to detritus (\code{"(unitless)"})
 
+\item \code{RH_CH4_FRAC}: Fraction of RH that is also respired as methane
+
+\item \code{PF_SIGMA}: Standard deviation parameter for permafrost-temp relationship
+
 \item \code{F_LUCV}: LUC fraction to vegetation (\code{"(unitless)"})
 
 \item \code{F_LUCD}: LUC fraction to detritus (\code{"(unitless)"})
@@ -96,11 +106,16 @@ instead of the more natural looking \code{GETDATA}.
 }
 
 \seealso{
-Other capability identifiers: \code{\link{carboncycle}},
-  \code{\link{concentrations}}, \code{\link{emissions}},
-  \code{\link{forcings}}, \code{\link{haloemiss}},
-  \code{\link{haloforcings}}, \code{\link{methane}},
-  \code{\link{ocean}}, \code{\link{so2}},
-  \code{\link{temperature}}
+Other capability identifiers: 
+\code{\link{carboncycle}},
+\code{\link{concentrations}},
+\code{\link{emissions}},
+\code{\link{forcings}},
+\code{\link{haloemiss}},
+\code{\link{haloforcings}},
+\code{\link{methane}},
+\code{\link{ocean}},
+\code{\link{so2}},
+\code{\link{temperature}}
 }
 \concept{capability identifiers}

@@ -206,6 +206,9 @@ private:
     double_stringmap q10_rh;            //!< Q10 for heterotrophic respiration (unitless)
 
     double_stringmap rh_ch4_frac;       // Fraction of RH that is CH4
+    
+    double_stringmap pf_sigma;       // Standard deviation for permafrost-temp model fit
+
 
     /*****************************************************************
      * Functions computing sub-elements of the carbon cycle
