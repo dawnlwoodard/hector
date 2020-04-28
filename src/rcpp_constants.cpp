@@ -1023,6 +1023,28 @@ String PF_SIGMA(String biome = "") {
     return out;
 }
 
+//' @describeIn parameters Mean parameter for permafrost-temp relationship
+//' @export
+// [[Rcpp::export]]
+String PF_MU(String biome = "") {
+    if (biome == "") return D_PF_MU;
+    String out = biome;
+    out += ".";
+    out += D_PF_MU;
+    return out;
+}
+
+//' @describeIn parameters Non-labile permafrost C fraction 
+//' @export
+// [[Rcpp::export]]
+String FPF_STATIC(String biome = "") {
+    if (biome == "") return D_FPF_STATIC;
+    String out = biome;
+    out += ".";
+    out += D_FPF_STATIC;
+    return out;
+}
+
 //' @describeIn parameters LUC fraction to vegetation (\code{"(unitless)"})
 //' @export
 // [[Rcpp::export]]

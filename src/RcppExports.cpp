@@ -1317,6 +1317,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// PF_MU
+String PF_MU(String biome);
+RcppExport SEXP _hector_PF_MU(SEXP biomeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< String >::type biome(biomeSEXP);
+    rcpp_result_gen = Rcpp::wrap(PF_MU(biome));
+    return rcpp_result_gen;
+END_RCPP
+}
+// FPF_STATIC
+String FPF_STATIC(String biome);
+RcppExport SEXP _hector_FPF_STATIC(SEXP biomeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< String >::type biome(biomeSEXP);
+    rcpp_result_gen = Rcpp::wrap(FPF_STATIC(biome));
+    return rcpp_result_gen;
+END_RCPP
+}
 // F_LUCV
 String F_LUCV();
 RcppExport SEXP _hector_F_LUCV() {
@@ -1840,6 +1862,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_hector_F_LITTERD", (DL_FUNC) &_hector_F_LITTERD, 1},
     {"_hector_RH_CH4_FRAC", (DL_FUNC) &_hector_RH_CH4_FRAC, 1},
     {"_hector_PF_SIGMA", (DL_FUNC) &_hector_PF_SIGMA, 1},
+    {"_hector_PF_MU", (DL_FUNC) &_hector_PF_MU, 1},
+    {"_hector_FPF_STATIC", (DL_FUNC) &_hector_FPF_STATIC, 1},
     {"_hector_F_LUCV", (DL_FUNC) &_hector_F_LUCV, 0},
     {"_hector_F_LUCD", (DL_FUNC) &_hector_F_LUCD, 0},
     {"_hector_VEG_C", (DL_FUNC) &_hector_VEG_C, 1},

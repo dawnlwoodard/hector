@@ -268,6 +268,8 @@
 #define D_RH_CH4                "rh_ch4"
 #define D_RH_CH4_FRAC           "rh_ch4_frac"
 #define D_PF_SIGMA              "pf_sigma"
+#define D_PF_MU                 "pf_mu"
+#define D_FPF_STATIC            "fpf_static"
 
 // slr component
 #define D_SL_RC                 "sl_rc"

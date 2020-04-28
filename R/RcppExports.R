@@ -787,6 +787,18 @@ PF_SIGMA <- function(biome = "") {
     .Call('_hector_PF_SIGMA', PACKAGE = 'hector', biome)
 }
 
+#' @describeIn parameters Mean parameter for permafrost-temp relationship
+#' @export
+PF_MU <- function(biome = "") {
+    .Call('_hector_PF_MU', PACKAGE = 'hector', biome)
+}
+
+#' @describeIn parameters Non-labile permafrost C fraction 
+#' @export
+FPF_STATIC <- function(biome = "") {
+    .Call('_hector_FPF_STATIC', PACKAGE = 'hector', biome)
+}
+
 #' @describeIn parameters LUC fraction to vegetation (\code{"(unitless)"})
 #' @export
 F_LUCV <- function() {

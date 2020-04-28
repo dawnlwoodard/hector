@@ -11,6 +11,8 @@
 \alias{F_LITTERD}
 \alias{RH_CH4_FRAC}
 \alias{PF_SIGMA}
+\alias{PF_MU}
+\alias{FPF_STATIC}
 \alias{F_LUCV}
 \alias{F_LUCD}
 \alias{ECS}
@@ -36,6 +38,10 @@ F_LITTERD(biome = "")
 RH_CH4_FRAC(biome = "")
 
 PF_SIGMA(biome = "")
+
+PF_MU(biome = "")
+
+FPF_STATIC(biome = "")
 
 F_LUCV()
 
@@ -83,6 +89,10 @@ mass).
 \item \code{RH_CH4_FRAC}: Fraction of RH that is also respired as methane
 
 \item \code{PF_SIGMA}: Standard deviation parameter for permafrost-temp relationship
+
+\item \code{PF_MU}: Mean parameter for permafrost-temp relationship
+
+\item \code{FPF_STATIC}: Non-labile permafrost C fraction
 
 \item \code{F_LUCV}: LUC fraction to vegetation (\code{"(unitless)"})
 

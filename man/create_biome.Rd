@@ -17,6 +17,8 @@ create_biome(
   q10_rh = 2,
   rh_ch4_frac = 0,
   pf_sigma = 0.618,
+  pf_mu = 1.258,
+  fpf_static = 0.4,
   f_nppv = 0.35,
   f_nppd = 0.6,
   f_litterd = 0.98

@@ -64,7 +64,11 @@ void SimpleNbox::init( Core* coreptr ) {
 
     rh_ch4_frac[ SNBOX_DEFAULT_BIOME ] = 0.0;
     
-    pf_sigma[ SNBOX_DEFAULT_BIOME ]  = 0.618;
+    pf_sigma[ SNBOX_DEFAULT_BIOME ] = 0.618;
+    
+    pf_mu[ SNBOX_DEFAULT_BIOME ] = 1.258;
+
+    fpf_static[ SNBOX_DEFAULT_BIOME ] = 0.4; 
 
     // Initialize the `biome_list` with just "global"
     biome_list.push_back( SNBOX_DEFAULT_BIOME );
@@ -88,6 +92,8 @@ void SimpleNbox::init( Core* coreptr ) {
     core->registerCapability( D_RH_SOIL, getComponentName() );
     core->registerCapability( D_RH_CH4, getComponentName() );
     core->registerCapability( D_PF_SIGMA, getComponentName() );
+    core->registerCapability( D_PF_MU, getComponentName() );
+    core->registerCapability( D_FPF_STATIC, getComponentName() );
     core->registerCapability( D_F_FROZEN, getComponentName() );
 
     // Register our dependencies
@@ -112,6 +118,8 @@ void SimpleNbox::init( Core* coreptr ) {
     core->registerInput(D_F_LUCD, getComponentName());
     core->registerInput(D_RH_CH4_FRAC, getComponentName());
     core->registerInput(D_PF_SIGMA, getComponentName());
+    core->registerInput(D_PF_MU, getComponentName());
+    core->registerInput(D_FPF_STATIC, getComponentName());
 }
 
 //------------------------------------------------------------------------------
@@ -312,6 +320,16 @@ void SimpleNbox::setData( const std::string &varName,
         else if( varNameParsed == D_PF_SIGMA ) {
            H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed for permafrost sigma" );
            pf_sigma[ biome ] = data.getUnitval( U_DEGC );
+        }
+        
+        else if( varNameParsed == D_PF_MU ) {
+           H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed for permafrost mu" );
+           pf_mu[ biome ] = data.getUnitval( U_DEGC );
+        }
+        
+        else if( varNameParsed == D_FPF_STATIC ) {
+           H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed for static permafrost fraction" );
+           fpf_static[ biome ] = data.getUnitval( U_UNITLESS );
         }
 
         else {
@@ -574,6 +592,14 @@ unitval SimpleNbox::getData(const std::string& varName,
         H_ASSERT(date == Core::undefinedIndex(), "Date not allowed for permafrost parameter sigma");
         H_ASSERT(has_biome( biome ), biome_error);
         returnval = unitval(pf_sigma.at(biome), U_DEGC);
+    } else if(varNameParsed == D_PF_MU) {
+        H_ASSERT(date == Core::undefinedIndex(), "Date not allowed for permafrost parameter mu");
+        H_ASSERT(has_biome( biome ), biome_error);
+        returnval = unitval(pf_mu.at(biome), U_DEGC);
+    } else if(varNameParsed == D_FPF_STATIC) {
+        H_ASSERT(date == Core::undefinedIndex(), "Date not allowed for permafrost C non-labile fraction");
+        H_ASSERT(has_biome( biome ), biome_error);
+        returnval = unitval(fpf_static.at(biome), U_UNITLESS);
     } else if(varNameParsed == D_RH_CH4_FRAC) {
         H_ASSERT(date == Core::undefinedIndex(), "Date not allowed for methane respiration fraction");
         H_ASSERT(has_biome( biome ), biome_error);
@@ -1178,12 +1204,12 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
     if ( !in_spinup ) { // No permafrost thaw during spinup
         // Static (non-labile) C fraction of permafrost
         // TODO: Needs to be a settable param.
-        double fpf_static = 0.4;
+        // double fpfstatic = 0.4;
         // Sum permafrost thaw in all biomes
         for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
             std::string biome = *it;
             double biome_c_thaw = permafrost_c.at(biome).value( U_PGC ) *
-                new_thaw.at(biome) * (1 - fpf_static);
+                new_thaw.at(biome) * (1 - fpf_static.at( biome ));
             permafrost_thaw_c = permafrost_thaw_c + unitval( biome_c_thaw, U_PGC_YR );
         }
     }
@@ -1304,13 +1330,13 @@ void SimpleNbox::slowparameval( double t, const double c[] )
             // Currently, these are calibrated to produce a 0.172 / year slope from
             // 0.8 to 4 degrees C, which was the linear form of this in Kessler.
             // TODO: These should be settable parameters
-            double pf_mu = 1.258;
+            //double pf_mu = 1.258;
             //double pf_sigma = 0.618;
 
             new_thaw[ biome ] = 0.0;
             if (permafrost_c[ biome ] > unitval(0.0, U_PGC)) {
 #ifdef USE_RCPP
-                double f_frozen_current = R::plnorm(Tgav_biome, pf_mu, pf_sigma.at( biome ), 0, 0);
+                double f_frozen_current = R::plnorm(Tgav_biome, pf_mu.at( biome ), pf_sigma.at( biome ), 0, 0);
 #else
                 H_THROW("Permafrost C calculation requires R math library ",
                         "for the `plnorm` function. Please compile with `-DUSE_RCPP` ",
@@ -1463,6 +1489,8 @@ void SimpleNbox::createBiome(const std::string& biome)
     f_litterd[ biome ] = f_litterd[ last_biome ];
     rh_ch4_frac[ biome ] = rh_ch4_frac[ last_biome ];
     pf_sigma[ biome ] = pf_sigma[ last_biome ];
+    pf_mu[ biome ] = pf_mu[ last_biome ];
+    fpf_static[ biome ] = fpf_static[ last_biome ];
 
     // Add to end of biome list
     biome_list.push_back(biome);
@@ -1490,6 +1518,8 @@ void SimpleNbox::deleteBiome(const std::string& biome) // Throw an error if the 
     f_litterd.erase(biome);
     rh_ch4_frac.erase(biome);
     pf_sigma.erase(biome);
+    pf_mu.erase(biome);
+    fpf_static.erase(biome);
 
     // C pools
     veg_c.erase( biome );
@@ -1553,6 +1583,10 @@ void SimpleNbox::renameBiome(const std::string& oldname, const std::string& newn
     rh_ch4_frac.erase(oldname);
     pf_sigma[ newname ] = pf_sigma.at( oldname );
     pf_sigma.erase(oldname);
+    pf_mu[ newname ] = pf_mu.at( oldname );
+    pf_mu.erase(oldname);
+    fpf_static[ newname ] = fpf_static.at( oldname );
+    fpf_static.erase(oldname);
 
     H_LOG(logger, Logger::DEBUG) << "Transferring C from biome '" << oldname <<
         "' to '" << newname << "'." << std::endl;

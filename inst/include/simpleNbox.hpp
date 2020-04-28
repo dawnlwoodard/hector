@@ -208,6 +208,10 @@ private:
     double_stringmap rh_ch4_frac;       // Fraction of RH that is CH4
     
     double_stringmap pf_sigma;       // Standard deviation for permafrost-temp model fit
+    
+    double_stringmap pf_mu;       // Mean for permafrost-temp model fit
+    
+    double_stringmap fpf_static;       // Permafrost C non-labile fraction
 
 
     /*****************************************************************
