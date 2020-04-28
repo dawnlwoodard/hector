@@ -63,12 +63,12 @@ void SimpleNbox::init( Core* coreptr ) {
     new_thaw[ SNBOX_DEFAULT_BIOME ] = 0.0;
 
     rh_ch4_frac[ SNBOX_DEFAULT_BIOME ] = 0.0;
-    
+
     pf_sigma[ SNBOX_DEFAULT_BIOME ] = 0.618;
-    
+
     pf_mu[ SNBOX_DEFAULT_BIOME ] = 1.258;
 
-    fpf_static[ SNBOX_DEFAULT_BIOME ] = 0.4; 
+    fpf_static[ SNBOX_DEFAULT_BIOME ] = 0.4;
 
     // Initialize the `biome_list` with just "global"
     biome_list.push_back( SNBOX_DEFAULT_BIOME );
@@ -85,11 +85,13 @@ void SimpleNbox::init( Core* coreptr ) {
     core->registerCapability( D_DETRITUSC, getComponentName() );
     core->registerCapability( D_SOILC, getComponentName() );
     core->registerCapability( D_PERMAFROSTC, getComponentName() );
+    core->registerCapability( D_THAWEDPC, getComponentName() );
     core->registerCapability( D_NPP_FLUX0, getComponentName() );
     core->registerCapability( D_NPP, getComponentName() );
     core->registerCapability( D_RH, getComponentName() );
     core->registerCapability( D_RH_DETRITUS, getComponentName() );
     core->registerCapability( D_RH_SOIL, getComponentName() );
+    core->registerCapability( D_RH_THAWEDP, getComponentName() );
     core->registerCapability( D_RH_CH4, getComponentName() );
     core->registerCapability( D_PF_SIGMA, getComponentName() );
     core->registerCapability( D_PF_MU, getComponentName() );
@@ -321,12 +323,12 @@ void SimpleNbox::setData( const std::string &varName,
            H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed for permafrost sigma" );
            pf_sigma[ biome ] = data.getUnitval( U_DEGC );
         }
-        
+
         else if( varNameParsed == D_PF_MU ) {
            H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed for permafrost mu" );
            pf_mu[ biome ] = data.getUnitval( U_DEGC );
         }
-        
+
         else if( varNameParsed == D_FPF_STATIC ) {
            H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed for static permafrost fraction" );
            fpf_static[ biome ] = data.getUnitval( U_UNITLESS );
@@ -352,7 +354,6 @@ void SimpleNbox::setData( const std::string &varName,
  */
 void SimpleNbox::sanitychecks() throw( h_exception )
 {
-
     // Make a few sanity checks here, and then return.
     H_ASSERT( atmos_c.value( U_PGC ) > 0.0, "atmos_c pool <=0" );
 
@@ -361,6 +362,7 @@ void SimpleNbox::sanitychecks() throw( h_exception )
         H_ASSERT( veg_c.at(biome).value( U_PGC ) >= 0.0, "veg_c pool < 0" );
         H_ASSERT( detritus_c.at(biome).value( U_PGC ) >= 0.0, "detritus_c pool < 0" );
         H_ASSERT( soil_c.at(biome).value( U_PGC ) >= 0.0, "soil_c pool < 0" );
+        H_ASSERT( thawed_permafrost_c.at(biome).value( U_PGC ) >= 0.0, "thawedp_c pool < 0" );
         H_ASSERT( permafrost_c.at(biome).value( U_PGC ) >= 0.0, "permafrost_c pool < 0" );
         H_ASSERT( npp_flux0.at(biome).value( U_PGC_YR ) >= 0.0, "npp_flux0 < 0" );
 
@@ -417,7 +419,7 @@ void SimpleNbox::log_pools( const double t )
     // Log pool states
     H_LOG( logger,Logger::DEBUG ) << "---- simpleNbox pool states at t=" << t << " ----" << std::endl;
     H_LOG( logger,Logger::DEBUG ) << "Atmos = " << atmos_c << std::endl;
-    H_LOG( logger,Logger::DEBUG ) << "Biome \tveg_c \t\tdetritus_c \tsoil_c\t\t permafrost_c" << std::endl;
+    H_LOG( logger,Logger::DEBUG ) << "Biome \tveg_c \t\tdetritus_c \tsoil_c\t\t thawed_c\t\t permafrost_c" << std::endl;
     for ( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
         std::string biome = *it;
         H_LOG( logger,Logger::DEBUG ) <<
@@ -425,6 +427,7 @@ void SimpleNbox::log_pools( const double t )
             veg_c[ biome ] << "\t" <<
             detritus_c[ biome ] << "\t\t" <<
             soil_c[ biome ] << "\t" <<
+            thawed_permafrost_c[ biome ] << "\t" <<
             permafrost_c[ biome ] <<
             std::endl;
     }
@@ -472,13 +475,15 @@ void SimpleNbox::prepareToRun() throw( h_exception )
                 "Setting to default value = 0.0" << std::endl;
             rh_ch4_frac[ biome ] = 0.0;
         }
-        
+
         if ( !pf_sigma.count( biome )) {
             H_LOG( logger, Logger::NOTICE ) << "No permafrost sigma parameter set for biome '" << biome << "'. " <<
                 "Setting to default value = 0.618" << std::endl;
             pf_sigma[ biome ] = 0.618;
         }
 
+        // Thawed permafrost C starts at zero
+        thawed_permafrost_c[ biome ].set(0.0, U_PGC);
     }
 
     // Save a pointer to the ocean model in use
@@ -566,7 +571,7 @@ unitval SimpleNbox::getData(const std::string& varName,
         if(date == Core::undefinedIndex())
             returnval = atmos_c;
         else
-            returnval = atmos_c_ts.get(date); 
+            returnval = atmos_c_ts.get(date);
     } else if( varNameParsed == D_ATMOSPHERIC_CO2 ) {
         if(date == Core::undefinedIndex())
             returnval = Ca;
