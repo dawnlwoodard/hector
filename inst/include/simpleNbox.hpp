@@ -26,6 +26,8 @@
 #define SNBOX_OCEAN 4
 #define SNBOX_EARTH 5
 #define SNBOX_PERMAFROST 6
+#define SNBOX_THAWEDP 7
+
 #define MB_EPSILON 0.001                //!< allowed tolerance for mass-balance checks, Pg C
 #define SNBOX_PARSECHAR "."             //!< input separator between <biome> and <pool>
 #define SNBOX_DEFAULT_BIOME "global"    //!< value if no biome supplied
