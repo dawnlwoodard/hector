@@ -1034,7 +1034,7 @@ String PF_MU(String biome = "") {
     return out;
 }
 
-//' @describeIn parameters Non-labile permafrost C fraction 
+//' @describeIn parameters Non-labile permafrost C fraction
 //' @export
 // [[Rcpp::export]]
 String FPF_STATIC(String biome = "") {
@@ -1104,6 +1104,18 @@ String PERMAFROST_C(String biome = "") {
   String out = biome;
   out += ".";
   out += D_PERMAFROSTC;
+  return out;
+}
+
+//' @describeIn carboncycle Thawed permafrost C pool (`"Pg C"`)
+//' @inheritParams BETA
+//' @export
+// [[Rcpp::export]]
+String THAWEDP_C(String biome = "") {
+  if (biome == "") return D_THAWEDPC;
+  String out = biome;
+  out += ".";
+  out += D_THAWEDPC;
   return out;
 }
 
@@ -1273,7 +1285,7 @@ String HEAT_FLUX() {
 return D_HEAT_FLUX;
 }
 
-//' @describeIn msgtype Character used to separate biome from variable name 
+//' @describeIn msgtype Character used to separate biome from variable name
 // [[Rcpp::export]]
 String BIOME_SPLIT_CHAR() {
 return SNBOX_PARSECHAR;

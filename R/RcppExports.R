@@ -793,7 +793,7 @@ PF_MU <- function(biome = "") {
     .Call('_hector_PF_MU', PACKAGE = 'hector', biome)
 }
 
-#' @describeIn parameters Non-labile permafrost C fraction 
+#' @describeIn parameters Non-labile permafrost C fraction
 #' @export
 FPF_STATIC <- function(biome = "") {
     .Call('_hector_FPF_STATIC', PACKAGE = 'hector', biome)
@@ -837,6 +837,13 @@ SOIL_C <- function(biome = "") {
 #' @export
 PERMAFROST_C <- function(biome = "") {
     .Call('_hector_PERMAFROST_C', PACKAGE = 'hector', biome)
+}
+
+#' @describeIn carboncycle Thawed permafrost C pool (`"Pg C"`)
+#' @inheritParams BETA
+#' @export
+THAWEDP_C <- function(biome = "") {
+    .Call('_hector_THAWEDP_C', PACKAGE = 'hector', biome)
 }
 
 #' @describeIn carboncycle Permafrost frozen fraction (`"unitless"`)
@@ -950,7 +957,7 @@ HEAT_FLUX <- function() {
     .Call('_hector_HEAT_FLUX', PACKAGE = 'hector')
 }
 
-#' @describeIn msgtype Character used to separate biome from variable name 
+#' @describeIn msgtype Character used to separate biome from variable name
 BIOME_SPLIT_CHAR <- function() {
     .Call('_hector_BIOME_SPLIT_CHAR', PACKAGE = 'hector')
 }

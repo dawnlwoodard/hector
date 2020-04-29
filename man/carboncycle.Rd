@@ -15,6 +15,7 @@
 \alias{DETRITUS_C}
 \alias{SOIL_C}
 \alias{PERMAFROST_C}
+\alias{THAWEDP_C}
 \alias{F_FROZEN}
 \alias{NPP_FLUX0}
 \title{Identifiers for variables in the Hector carbon cycle component}
@@ -45,6 +46,8 @@ SOIL_C(biome = "")
 
 PERMAFROST_C(biome = "")
 
+THAWEDP_C(biome = "")
+
 F_FROZEN(biome = "")
 
 NPP_FLUX0(biome = "")
@@ -66,6 +69,8 @@ carbon cycle
 \item \code{SOIL_C}: Soil C pool (`"Pg C"`)
 
 \item \code{PERMAFROST_C}: Permafrost C pool (`"Pg C"`)
+
+\item \code{THAWEDP_C}: Thawed permafrost C pool (`"Pg C"`)
 
 \item \code{F_FROZEN}: Permafrost frozen fraction (`"unitless"`)
 
