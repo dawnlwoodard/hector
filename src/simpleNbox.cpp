@@ -319,7 +319,8 @@ void SimpleNbox::setData( const std::string &varName,
            H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed for RH CH4 fraction" );
            rh_ch4_frac[ biome ] = data.getUnitval( U_UNITLESS );
         }
-
+        
+        // Permafrost thaw parameters
         else if( varNameParsed == D_PF_SIGMA ) {
            H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed for permafrost sigma" );
            pf_sigma[ biome ] = data.getUnitval( U_DEGC );
@@ -1435,6 +1436,7 @@ void SimpleNbox::record_state(double t)
     detritus_c_tv.set(t, detritus_c);
     soil_c_tv.set(t, soil_c);
     permafrost_c_tv.set(t, permafrost_c);
+    thawed_permafrost_c_tv.set(t, permafrost_c);
 
     for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
         std::string biome = *it;
