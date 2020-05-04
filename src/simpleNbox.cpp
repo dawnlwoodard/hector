@@ -319,7 +319,7 @@ void SimpleNbox::setData( const std::string &varName,
            H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed for RH CH4 fraction" );
            rh_ch4_frac[ biome ] = data.getUnitval( U_UNITLESS );
         }
-        
+
         // Permafrost thaw parameters
         else if( varNameParsed == D_PF_SIGMA ) {
            H_ASSERT( data.date == Core::undefinedIndex(), "date not allowed for permafrost sigma" );
@@ -1077,17 +1077,7 @@ unitval SimpleNbox::sum_npp(double time) const
 unitval SimpleNbox::rh_fda( std::string biome ) const
 {
     unitval dflux( detritus_c.at( biome ).value( U_PGC ) * 0.25, U_PGC_YR );
-    return dflux * tempfertd.at( biome ) * (1.0 - rh_ch4_frac.at( biome ));
-}
-
-//------------------------------------------------------------------------------
-/*! \brief      Compute detritus component of annual heterotrophic respiration - CH4
- *  \returns    current detritus component of annual heterotrophic respiration - CH4
- */
-unitval SimpleNbox::rh_fda_ch4( std::string biome ) const
-{
-    unitval dflux( detritus_c.at( biome ).value( U_PGC ) * 0.25, U_PGC_YR );
-    return dflux * tempfertd.at( biome ) * (rh_ch4_frac.at( biome ));
+    return dflux * tempfertd.at( biome );
 }
 
 //------------------------------------------------------------------------------
@@ -1126,7 +1116,7 @@ unitval SimpleNbox::rh( std::string biome ) const
  */
 unitval SimpleNbox::rh_ch4( std::string biome ) const
 {
-    return rh_fda_ch4( biome ) + rh_fsa_ch4( biome );
+    return rh_fsa_ch4( biome );
 }
 
 
@@ -1186,7 +1176,6 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
     unitval rh_fda_current( 0.0, U_PGC_YR );
     unitval rh_fsa_current( 0.0, U_PGC_YR );
 
-    unitval rh_fda_ch4_current( 0.0, U_PGC_YR );
     unitval rh_fsa_ch4_current( 0.0, U_PGC_YR );
 
     for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
@@ -1201,11 +1190,10 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
         rh_fda_current = rh_fda_current + rh_fda( biome );
         rh_fsa_current = rh_fsa_current + rh_fsa( biome );
 
-        rh_fda_ch4_current = rh_fda_ch4_current + rh_fda_ch4( biome );
         rh_fsa_ch4_current = rh_fsa_ch4_current + rh_fsa_ch4( biome );
     }
     unitval rh_current = rh_fda_current + rh_fsa_current;
-    unitval rh_ch4_current = rh_fsa_ch4_current + rh_fda_ch4_current;
+    unitval rh_ch4_current = rh_fsa_ch4_current;
 
     // Detritus flux comes from the vegetation pool
     // TODO: these values should use the c[] pools passed in by solver!
@@ -1285,7 +1273,6 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
         + litter_fvd.value( U_PGC_YR )
         - detsoil_flux.value( U_PGC_YR )
         - rh_fda_current.value( U_PGC_YR )
-        - rh_fda_ch4_current.value( U_PGC_YR )
         - luc_fda.value( U_PGC_YR );
     dcdt[ SNBOX_SOIL ] = // change in soil pool
         npp_fas.value( U_PGC_YR )
@@ -1442,7 +1429,7 @@ void SimpleNbox::record_state(double t)
         std::string biome = *it;
         if (!in_spinup) {
             NPP_veg[ biome ] = npp( biome );
-            RH_det[ biome ] = rh_fda( biome ) + rh_fda_ch4( biome );
+            RH_det[ biome ] = rh_fda( biome );
             RH_soil[ biome ] = rh_fsa( biome ) + rh_fsa_ch4( biome );
         } else {
             NPP_veg[ biome ] = unitval(0.0, U_PGC_YR);
