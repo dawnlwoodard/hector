@@ -1446,15 +1446,18 @@ void SimpleNbox::record_state(double t)
             NPP_veg[ biome ] = npp( biome );
             RH_det[ biome ] = rh_fda( biome );
             RH_soil[ biome ] = rh_fsa( biome );
+            RH_thawed_permafrost[ biome ] = rh_ftpa_co2( biome );
         } else {
             NPP_veg[ biome ] = unitval(0.0, U_PGC_YR);
             RH_det[ biome ] = unitval(0.0, U_PGC_YR);
             RH_soil[ biome ] = unitval(0.0, U_PGC_YR);
+            RH_thawed_permafrost[ biome ] = unitval(0.0, U_PGC_YR);
         }
     }
     NPP_veg_tv.set(t, NPP_veg);
     RH_det_tv.set(t, RH_det);
     RH_soil_tv.set(t, RH_soil);
+    RH_thawed_permafrost_tv.set(t, RH_thawed_permafrost);
 
     residual_ts.set(t, residual);
 
@@ -1550,7 +1553,8 @@ void SimpleNbox::createBiome(const std::string& biome)
     // Add to end of biome list
     biome_list.push_back(biome);
 
-    H_LOG(logger, Logger::DEBUG) << "Finished creating biome '" << biome << "'." << std::endl;}
+    H_LOG(logger, Logger::DEBUG) << "Finished creating biome '" << biome << "'." << std::endl;
+}
 
 // Delete a biome: Remove it from the `biome_list` and `erase` all of
 // the associated parameters.
