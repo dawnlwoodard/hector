@@ -32,7 +32,7 @@ using namespace boost;
 //------------------------------------------------------------------------------
 /*! \brief constructor
  */
-SimpleNbox::SimpleNbox() : CarbonCycleModel( 7 ), masstot(0.0) {
+SimpleNbox::SimpleNbox() : CarbonCycleModel( 8 ), masstot(0.0) {
     ffiEmissions.allowInterp( true );
     ffiEmissions.name = "ffiEmissions";
     lucEmissions.allowInterp( true );
