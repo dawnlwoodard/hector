@@ -1248,6 +1248,8 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
 
     // As permafrost thaws, the C is mobilized into the thawed permafrost pool.
     unitval permafrost_thaw_c( 0.0, U_PGC_YR );
+    unitval permafrost_refreeze_tp( 0.0, U_PGC_YR );
+    unitval permafrost_refreeze_soil( 0.0, U_PGC_YR );
     if ( !in_spinup ) { // No permafrost thaw during spinup
         // Static (non-labile) C fraction of permafrost
         // TODO: Needs to be a settable param.
@@ -1257,8 +1259,16 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
             std::string biome = *it;
             double biome_c_thaw = permafrost_c.at(biome).value( U_PGC ) *
                 new_thaw.at(biome) * (1 - fpf_static.at( biome ));
-            permafrost_thaw_c = permafrost_thaw_c + unitval( biome_c_thaw, U_PGC_YR );
-        }
+
+            if(biome_c_thaw >= 0) {
+              permafrost_thaw_c = permafrost_thaw_c + unitval( biome_c_thaw, U_PGC_YR );
+            } else {
+              // If the permafrost thaw is negative, that means refreezing (preferentially from the
+              // thawed permafrost pool, otherwise from soil pool)
+              permafrost_refreeze_tp = std::min(-permafrost_thaw_c, thawed_permafrost_c.at(biome));
+              permafrost_refreeze_soil = -permafrost_thaw_c - permafrost_refreeze_tp;
+            }
+          }
     }
 
     // Compute fluxes
@@ -1290,9 +1300,11 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
         + litter_fvs.value( U_PGC_YR )
         + detsoil_flux.value( U_PGC_YR )
         - rh_fsa_current.value( U_PGC_YR )
+        - permafrost_refreeze_soil.value( U_PGC_YR )
         - luc_fsa.value( U_PGC_YR );
     dcdt[ SNBOX_THAWEDP ] =
         permafrost_thaw_c.value( U_PGC_YR )
+        - permafrost_refreeze_tp.value( U_PGC_YR )
         - rh_ftpa_ch4_current.value( U_PGC_YR )
         - rh_ftpa_co2_current.value( U_PGC_YR );
     dcdt[ SNBOX_OCEAN ] = // change in ocean pool
@@ -1300,7 +1312,9 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
     dcdt[ SNBOX_EARTH ] = // change in earth pool
         - ffi_flux_current.value( U_PGC_YR );
     dcdt[ SNBOX_PERMAFROST ] = // change in permafrost pool
-     - permafrost_thaw_c.value( U_PGC_YR );
+     - permafrost_thaw_c.value( U_PGC_YR ) +
+     permafrost_refreeze_soil.value( U_PGC_YR ) +
+     permafrost_refreeze_tp.value( U_PGC_YR );
 
 /*    printf( "%6.3f%8.3f%8.2f%8.2f%8.2f%8.2f%8.2f%8.2f\n", t, dcdt[ SNBOX_ATMOS ],
             dcdt[ SNBOX_VEG ], dcdt[ SNBOX_DET ], dcdt[ SNBOX_SOIL ], dcdt[ SNBOX_OCEAN ], dcdt[ SNBOX_EARTH ], dcdt[ SNBOX_PERMAFROST ] );
