@@ -1144,8 +1144,6 @@ unitval SimpleNbox::sum_rh() const
     return total;
 }
 
-
-
 //------------------------------------------------------------------------------
 /*! \brief      Compute global heterotrophic CH4 respiration
  *  \returns    Annual CH4 RH summed across all biomes
@@ -1248,7 +1246,7 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
     // Oxidized methane of fossil fuel origin
     unitval ch4ox_current( 0.0, U_PGC_YR );     //TODO: implement this
 
-    // As permafrost thaws, the C is mobilized into the soil pool.
+    // As permafrost thaws, the C is mobilized into the thawed permafrost pool.
     unitval permafrost_thaw_c( 0.0, U_PGC_YR );
     if ( !in_spinup ) { // No permafrost thaw during spinup
         // Static (non-labile) C fraction of permafrost
