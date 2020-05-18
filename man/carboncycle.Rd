@@ -8,6 +8,8 @@
 \alias{RH}
 \alias{RH_DETRITUS}
 \alias{RH_SOIL}
+\alias{RH_THAWEDP}
+\alias{RH_CH4}
 \alias{ATMOSPHERIC_C}
 \alias{FFI_EMISSIONS}
 \alias{LUC_EMISSIONS}
@@ -31,6 +33,10 @@ RH(biome = "")
 RH_DETRITUS(biome = "")
 
 RH_SOIL(biome = "")
+
+RH_THAWEDP(biome = "")
+
+RH_CH4(biome = "")
 
 ATMOSPHERIC_C()
 

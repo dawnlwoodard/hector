@@ -120,8 +120,8 @@ private:
     // Net primary productivity of vegetation;
     // Heterotrophic CO2 respiration of detritus and soil
     unitval_stringmap NPP_veg, RH_det, RH_soil;
-    // Heterotrophic CO2 respiration of thawed permafrost
-    unitval_stringmap RH_thawed_permafrost;
+    // Heterotrophic CO2 and CH4 respiration of thawed permafrost
+    unitval_stringmap RH_thawed_permafrost, RH_ch4;
 
     // `permafrost_c` keeps track of C immobilized in permafrost. As permafrost
     // thaws, some of this C is transferred into the thawed permafrost C pool.
@@ -150,7 +150,7 @@ private:
     tvector<unitval_stringmap> thawed_permafrost_c_tv; //!< Time series of biome-specific thawed permafrost
 
     // Time series versions of flux variables
-    tvector<unitval_stringmap> NPP_veg_tv, RH_det_tv, RH_soil_tv, RH_thawed_permafrost_tv;
+    tvector<unitval_stringmap> NPP_veg_tv, RH_det_tv, RH_soil_tv, RH_thawed_permafrost_tv, RH_ch4_tv;
 
     tseries<unitval> residual_ts; //!< Time series of residual flux values
 

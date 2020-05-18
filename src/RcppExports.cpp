@@ -1189,6 +1189,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// RH_THAWEDP
+String RH_THAWEDP(String biome);
+RcppExport SEXP _hector_RH_THAWEDP(SEXP biomeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< String >::type biome(biomeSEXP);
+    rcpp_result_gen = Rcpp::wrap(RH_THAWEDP(biome));
+    return rcpp_result_gen;
+END_RCPP
+}
+// RH_CH4
+String RH_CH4(String biome);
+RcppExport SEXP _hector_RH_CH4(SEXP biomeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< String >::type biome(biomeSEXP);
+    rcpp_result_gen = Rcpp::wrap(RH_CH4(biome));
+    return rcpp_result_gen;
+END_RCPP
+}
 // PREINDUSTRIAL_CO2
 String PREINDUSTRIAL_CO2();
 RcppExport SEXP _hector_PREINDUSTRIAL_CO2() {
@@ -1861,6 +1883,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_hector_RH", (DL_FUNC) &_hector_RH, 1},
     {"_hector_RH_DETRITUS", (DL_FUNC) &_hector_RH_DETRITUS, 1},
     {"_hector_RH_SOIL", (DL_FUNC) &_hector_RH_SOIL, 1},
+    {"_hector_RH_THAWEDP", (DL_FUNC) &_hector_RH_THAWEDP, 1},
+    {"_hector_RH_CH4", (DL_FUNC) &_hector_RH_CH4, 1},
     {"_hector_PREINDUSTRIAL_CO2", (DL_FUNC) &_hector_PREINDUSTRIAL_CO2, 0},
     {"_hector_ATMOSPHERIC_C", (DL_FUNC) &_hector_ATMOSPHERIC_C, 0},
     {"_hector_FFI_EMISSIONS", (DL_FUNC) &_hector_FFI_EMISSIONS, 0},

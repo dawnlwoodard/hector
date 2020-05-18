@@ -708,6 +708,18 @@ RH_SOIL <- function(biome = "") {
     .Call('_hector_RH_SOIL', PACKAGE = 'hector', biome)
 }
 
+#' @rdname carboncycle
+#' @export
+RH_THAWEDP <- function(biome = "") {
+    .Call('_hector_RH_THAWEDP', PACKAGE = 'hector', biome)
+}
+
+#' @rdname carboncycle
+#' @export
+RH_CH4 <- function(biome = "") {
+    .Call('_hector_RH_CH4', PACKAGE = 'hector', biome)
+}
+
 #' @describeIn parameters Preindustrial CO2 concentration (\code{"ppmv CO2"})
 #' @export
 PREINDUSTRIAL_CO2 <- function() {

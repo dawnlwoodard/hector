@@ -804,9 +804,22 @@ unitval SimpleNbox::getData(const std::string& varName,
             else
                 returnval = RH_soil_tv.get(date).at(biome);
         }
-    } else if ( varNameParsed == D_RH_CH4 ) {
-        H_ASSERT( date == Core::undefinedIndex() , "date not allowed for CH4 from RH" );
-        returnval = sum_rh_ch4();
+    } else if( varNameParsed == D_RH_CH4 ) {
+        if(biome == SNBOX_DEFAULT_BIOME) {
+            if (date == Core::undefinedIndex())
+                returnval = sum_map( RH_ch4 );
+            else
+                returnval = sum_map( RH_ch4_tv.get(date) );
+        } else {
+            H_ASSERT(has_biome( biome ), biome_error);
+            if(date == Core::undefinedIndex())
+                returnval = RH_ch4.at(biome);
+            else
+                returnval = RH_ch4_tv.get(date).at(biome);
+        }
+    //} else if ( varNameParsed == D_RH_CH4 ) {
+    //    H_ASSERT( date == Core::undefinedIndex() , "date not allowed for CH4 from RH" );
+    //    returnval = sum_rh_ch4();
 
     }else {
         H_THROW( "Caller is requesting unknown variable: " + varName );
@@ -1459,17 +1472,20 @@ void SimpleNbox::record_state(double t)
             RH_det[ biome ] = rh_fda( biome );
             RH_soil[ biome ] = rh_fsa( biome );
             RH_thawed_permafrost[ biome ] = rh_ftpa_co2( biome );
+            RH_ch4[ biome ] = rh_ftpa_ch4( biome );
         } else {
             NPP_veg[ biome ] = unitval(0.0, U_PGC_YR);
             RH_det[ biome ] = unitval(0.0, U_PGC_YR);
             RH_soil[ biome ] = unitval(0.0, U_PGC_YR);
             RH_thawed_permafrost[ biome ] = unitval(0.0, U_PGC_YR);
+            RH_ch4[ biome ] = unitval(0.0, U_PGC_YR);
         }
     }
     NPP_veg_tv.set(t, NPP_veg);
     RH_det_tv.set(t, RH_det);
     RH_soil_tv.set(t, RH_soil);
     RH_thawed_permafrost_tv.set(t, RH_thawed_permafrost);
+    RH_ch4_tv.set(t, RH_ch4);
 
     residual_ts.set(t, residual);
 
@@ -1538,6 +1554,8 @@ void SimpleNbox::createBiome(const std::string& biome)
     add_biome_to_ts(RH_soil_tv, biome, RH_soil.at( biome ));
     RH_thawed_permafrost[ biome ] = unitval(0.0, U_PGC);
     add_biome_to_ts(RH_thawed_permafrost_tv, biome, RH_thawed_permafrost.at( biome ));
+    RH_ch4[ biome ] = unitval(0.0, U_PGC);
+    add_biome_to_ts(RH_ch4_tv, biome, RH_ch4.at( biome ));
 
     npp_flux0[ biome ] = unitval(0, U_PGC_YR);
 
@@ -1613,6 +1631,8 @@ void SimpleNbox::deleteBiome(const std::string& biome) // Throw an error if the 
     remove_biome_from_ts(RH_soil_tv, biome);
     RH_thawed_permafrost.erase( biome );
     remove_biome_from_ts(RH_thawed_permafrost_tv, biome);
+    RH_ch4.erase( biome );
+    remove_biome_from_ts(RH_ch4_tv, biome);
 
     // Others
     npp_flux0.erase( biome );
@@ -1695,6 +1715,9 @@ void SimpleNbox::renameBiome(const std::string& oldname, const std::string& newn
     RH_thawed_permafrost[ newname ] = RH_thawed_permafrost.at( oldname );
     RH_thawed_permafrost.erase(oldname);
     rename_biome_in_ts(RH_thawed_permafrost_tv, oldname, newname);
+    RH_ch4[ newname ] = RH_ch4.at( oldname );
+    RH_ch4.erase(oldname);
+    rename_biome_in_ts(RH_ch4_tv, oldname, newname);
 
     npp_flux0[ newname ] = npp_flux0.at( oldname );
     npp_flux0.erase(oldname);

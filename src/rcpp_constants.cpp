@@ -897,6 +897,28 @@ String RH_SOIL(String biome = "") {
   return out;
 }
 
+//' @rdname carboncycle
+//' @export
+// [[Rcpp::export]]
+String RH_THAWEDP(String biome = "") {
+  if (biome == "") return D_RH_THAWEDP;
+  String out = biome;
+  out += ".";
+  out += D_RH_THAWEDP;
+  return out;
+}
+
+//' @rdname carboncycle
+//' @export
+// [[Rcpp::export]]
+String RH_CH4(String biome = "") {
+  if (biome == "") return D_RH_CH4;
+  String out = biome;
+  out += ".";
+  out += D_RH_CH4;
+  return out;
+}
+
 //' @describeIn parameters Preindustrial CO2 concentration (\code{"ppmv CO2"})
 //' @export
 // [[Rcpp::export]]
