@@ -1475,7 +1475,7 @@ void SimpleNbox::record_state(double t)
     detritus_c_tv.set(t, detritus_c);
     soil_c_tv.set(t, soil_c);
     permafrost_c_tv.set(t, permafrost_c);
-    thawed_permafrost_c_tv.set(t, permafrost_c);
+    thawed_permafrost_c_tv.set(t, thawed_permafrost_c);
 
     for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
         std::string biome = *it;
