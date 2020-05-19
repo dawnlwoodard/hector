@@ -715,10 +715,22 @@ unitval SimpleNbox::getData(const std::string& varName,
     } else if( varNameParsed == D_F_FROZEN) {
         double tempval;
         if(biome == SNBOX_DEFAULT_BIOME) {
-            if(date == Core::undefinedIndex())
-                tempval = sum_map( f_frozen );
-            else
-                tempval = sum_map(f_frozen_tv.get(date));
+            unitval perm_tot = sum_map( permafrost_c );
+            double temp_step = 0.0;
+
+            if(date == Core::undefinedIndex()) {
+                for ( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
+                    std::string biome = *it;
+                    temp_step += (permafrost_c.at(biome)/perm_tot)*f_frozen.at(biome);
+                }
+                tempval = temp_step;
+            } else {
+                for ( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
+                    std::string biome = *it;
+                    temp_step += (permafrost_c.at(biome)/perm_tot)*f_frozen_tv.get(date).at(biome);
+                }
+                tempval = temp_step;
+            }
         } else {
             H_ASSERT(has_biome( biome ), biome_error);
             if(date == Core::undefinedIndex())
