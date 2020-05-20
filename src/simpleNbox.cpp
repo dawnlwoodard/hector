@@ -717,18 +717,25 @@ unitval SimpleNbox::getData(const std::string& varName,
         if(biome == SNBOX_DEFAULT_BIOME) {
             unitval perm_tot = sum_map( permafrost_c );
             double temp_step = 0.0;
-
+            // f_frozen output should be 1.0 when there is no permafrost carbon in the system
+            // otherwise it should be the permafrost-area weighted average across biomes
             if(date == Core::undefinedIndex()) {
-                for ( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
-                    std::string biome = *it;
-                    temp_step += (permafrost_c.at(biome)/perm_tot)*f_frozen.at(biome);
-                }
+                if (std::any_of(permafrost_c.begin(), permafrost_c.end(), [](std::pair<std::string, unitval> it) {return it.second > unitval(0.0, U_PGC);})) {
+                    for ( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
+                        std::string biome = *it;
+                        temp_step += (permafrost_c.at(biome)/perm_tot)*f_frozen.at(biome);
+                    }
+                } else
+                    temp_step = 1.0;
                 tempval = temp_step;
             } else {
-                for ( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
-                    std::string biome = *it;
-                    temp_step += (permafrost_c.at(biome)/perm_tot)*f_frozen_tv.get(date).at(biome);
-                }
+                if (std::any_of(permafrost_c.begin(), permafrost_c.end(), [](std::pair<std::string, unitval> it) {return it.second > unitval(0.0, U_PGC);})) {
+                    for ( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
+                        std::string biome = *it;
+                        temp_step += (permafrost_c.at(biome)/perm_tot)*f_frozen_tv.get(date).at(biome);
+                    }
+                } else
+                    temp_step = 1.0;
                 tempval = temp_step;
             }
         } else {
@@ -1276,9 +1283,6 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
     unitval permafrost_refreeze_tp( 0.0, U_PGC_YR );
     unitval permafrost_refreeze_soil( 0.0, U_PGC_YR );
     if ( !in_spinup ) { // No permafrost thaw during spinup
-        // Static (non-labile) C fraction of permafrost
-        // TODO: Needs to be a settable param.
-        // double fpfstatic = 0.4;
         // Sum permafrost thaw in all biomes
         for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
             std::string biome = *it;
