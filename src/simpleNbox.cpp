@@ -1291,11 +1291,12 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
 
             if(biome_c_thaw >= 0) {
               permafrost_thaw_c = permafrost_thaw_c + unitval( biome_c_thaw, U_PGC_YR );
+              //unitval permafrost_thaw_c2 = permafrost_thaw_c + biome_c_thaw2;
             } else {
               // If the permafrost thaw is negative, that means refreezing (preferentially from the
               // thawed permafrost pool, otherwise from soil pool)
-              permafrost_refreeze_tp = std::min(-permafrost_thaw_c, thawed_permafrost_c.at(biome));
-              permafrost_refreeze_soil = -permafrost_thaw_c - permafrost_refreeze_tp;
+              permafrost_refreeze_tp = std::min( unitval( biome_c_thaw, U_PGC_YR ), thawed_permafrost_c.at( biome ) );
+              permafrost_refreeze_soil = -unitval( biome_c_thaw, U_PGC_YR ) - permafrost_refreeze_tp;
             }
           }
     }
