@@ -1119,7 +1119,7 @@ unitval SimpleNbox::rh_fda( std::string biome ) const
 unitval SimpleNbox::rh_fsa( std::string biome ) const
 {
     unitval soilflux( soil_c.at( biome ).value( U_PGC ) * 0.02, U_PGC_YR );
-    return soilflux * tempferts.at( biome ) * (1.0 - rh_ch4_frac.at( biome ));
+    return soilflux * tempferts.at( biome );
 }
 
 //------------------------------------------------------------------------------
