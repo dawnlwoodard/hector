@@ -65,9 +65,9 @@ void SimpleNbox::init( Core* coreptr ) {
 
     rh_ch4_frac[ SNBOX_DEFAULT_BIOME ] = 0.0;
 
-    pf_sigma[ SNBOX_DEFAULT_BIOME ] = 0.618;
+    pf_sigma[ SNBOX_DEFAULT_BIOME ] = 0.917;
 
-    pf_mu[ SNBOX_DEFAULT_BIOME ] = 1.258;
+    pf_mu[ SNBOX_DEFAULT_BIOME ] = 1.80;
 
     fpf_static[ SNBOX_DEFAULT_BIOME ] = 0.4;
 
