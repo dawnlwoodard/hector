@@ -364,9 +364,15 @@ void SimpleNbox::sanitychecks() throw( h_exception )
         H_ASSERT( veg_c.at(biome).value( U_PGC ) >= 0.0, "veg_c pool < 0" );
         H_ASSERT( detritus_c.at(biome).value( U_PGC ) >= 0.0, "detritus_c pool < 0" );
         H_ASSERT( soil_c.at(biome).value( U_PGC ) >= 0.0, "soil_c pool < 0" );
-        H_ASSERT( thawed_permafrost_c.at(biome).value( U_PGC ) >= 0.0, "thawedp_c pool < 0" );
-        H_ASSERT( permafrost_c.at(biome).value( U_PGC ) >= 0.0, "permafrost_c pool < 0" );
+        //H_ASSERT( thawed_permafrost_c.at(biome).value( U_PGC ) >= 0.0, "thawedp_c pool < 0" );
+        //H_ASSERT( permafrost_c.at(biome).value( U_PGC ) >= 0.0, "permafrost_c pool < 0" );
         H_ASSERT( npp_flux0.at(biome).value( U_PGC_YR ) >= 0.0, "npp_flux0 < 0" );
+        if (abs(thawed_permafrost_c.at( biome ).value( U_PGC)) < 1e-12){
+            thawed_permafrost_c[ biome ] = unitval(0, U_PGC);
+        }
+        if (abs(permafrost_c.at( biome ).value( U_PGC)) < 1e-12){
+            permafrost_c[ biome ] = unitval(0, U_PGC);
+        }
 
         H_ASSERT( f_nppv.at(biome) >= 0.0, "f_nppv <0" );
         H_ASSERT( f_nppd.at(biome) >= 0.0, "f_nppd <0" );
@@ -1295,7 +1301,8 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
             } else {
               // If the permafrost thaw is negative, that means refreezing (preferentially from the
               // thawed permafrost pool, otherwise from soil pool)
-              permafrost_refreeze_tp = std::min( unitval( biome_c_thaw, U_PGC_YR ), thawed_permafrost_c.at( biome ) );
+              double thawed_remaining = thawed_permafrost_c.at( biome ).value( U_PGC ) - rh_ftpa_co2_current.value( U_PGC_YR ) - rh_ch4_current.value( U_PGC_YR );
+              permafrost_refreeze_tp = std::min( -unitval( biome_c_thaw, U_PGC_YR ), unitval( thawed_remaining, U_PGC_YR ) );
               permafrost_refreeze_soil = -unitval( biome_c_thaw, U_PGC_YR ) - permafrost_refreeze_tp;
             }
           }
@@ -1347,7 +1354,7 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
      permafrost_refreeze_tp.value( U_PGC_YR );
 
 /*    printf( "%6.3f%8.3f%8.2f%8.2f%8.2f%8.2f%8.2f%8.2f\n", t, dcdt[ SNBOX_ATMOS ],
-            dcdt[ SNBOX_VEG ], dcdt[ SNBOX_DET ], dcdt[ SNBOX_SOIL ], dcdt[ SNBOX_OCEAN ], dcdt[ SNBOX_EARTH ], dcdt[ SNBOX_PERMAFROST ] );
+            dcdt[ SNBOX_VEG ], dcdt[ SNBOX_DET ], dcdt[ SNBOX_SOIL ], dcdt[ SNBOX_OCEAN ], dcdt[ SNBOX_EARTH ], dcdt[ SNBOX_PERMAFROST ], dcdt[ SNBOX_THAWEDP ] );
 */
     return omodel_err;
 }
