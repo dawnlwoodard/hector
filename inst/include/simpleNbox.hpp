@@ -115,6 +115,7 @@ private:
     // We track thawed peramfrost separately than soil, so that (i) we know how large
     // its GHG emissions are, and (ii) we can apply rh_ch4_frac (the CH4:CO2 ratio) to it
     unitval_stringmap thawed_permafrost_c;       //!< thawed permafrost pool, Pg C
+    unitval_stringmap static_c;  //!< static carbon total in thawed permafrost pool
 
     // SimpleNBox fluxes:
     // Net primary productivity of vegetation;
@@ -148,6 +149,7 @@ private:
     tvector<unitval_stringmap> soil_c_tv;     //!< Time series of biome-specific soil carbon pools
     tvector<unitval_stringmap> permafrost_c_tv;     //!< Time series of biome-specific permafrost carbon pools
     tvector<unitval_stringmap> thawed_permafrost_c_tv; //!< Time series of biome-specific thawed permafrost
+    tvector<unitval_stringmap> static_c_tv; //!< Time series of biome-specific thawed permafrost
 
     // Time series versions of flux variables
     tvector<unitval_stringmap> NPP_veg_tv, RH_det_tv, RH_soil_tv, RH_thawed_permafrost_tv, RH_ch4_tv;
