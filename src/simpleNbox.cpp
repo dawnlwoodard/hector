@@ -371,6 +371,9 @@ void SimpleNbox::sanitychecks() throw( h_exception )
         if (abs(thawed_permafrost_c.at( biome ).value( U_PGC)) < 1e-12){
             thawed_permafrost_c[ biome ] = unitval(0, U_PGC);
         }
+        if (abs(static_c.at( biome ).value( U_PGC)) < 1e-12){
+            static_c[ biome ] = unitval(0, U_PGC);
+        }
         if (abs(permafrost_c.at( biome ).value( U_PGC)) < 1e-12){
             permafrost_c[ biome ] = unitval(0, U_PGC);
         }
@@ -489,7 +492,7 @@ void SimpleNbox::prepareToRun() throw( h_exception )
                 "Setting to default value = 0.0" << std::endl;
             rh_ch4_frac[ biome ] = 0.0;
         }
-        
+
         if ( !pf_mu.count( biome )) {
             H_LOG( logger, Logger::NOTICE ) << "No permafrost mu parameter set for biome '" << biome << "'. " <<
                 "Setting to default value = 1.80" << std::endl;
@@ -1023,11 +1026,22 @@ void SimpleNbox::stashCValues( double t, const double c[] )
         // If no permafrost, the weight evaluates to `nan`, so set to zero.
         const double wt_pf  = permafrost_total > 0 ? permafrost_c.at( biome ) / permafrost_total : 0;
         H_LOG( logger,Logger::DEBUG ) << "Biome " << biome << " permafrost weight = " << wt_pf << std::endl;
-        if (thawedp_delta>0){
+        std::cout << "static c in stashCValues: " << static_c.at(biome).value(U_PGC) << std::endl;
+        std::cout << "fpf_static in stashCValues: " << fpf_static.at(biome) << std::endl;
+        if (thawedp_delta>=0){
             static_c[ biome ] = static_c.at( biome ) + thawedp_delta*wt_pf*fpf_static.at(biome);
-        } else {
+
+        } // if either thawed permafrost is 0 or it will be, static_c should also be zero 
+        else if (thawed_permafrost_c.at( biome ) == 0.0 || abs(thawed_permafrost_c.at( biome ) + thawedp_delta*wt_pf) < 1e-12) {
+            static_c[ biome ] = unitval(0.0, U_PGC);
+        } 
+        else {  // refreeze has occurred and we need to estimated static_c based on previous thawed_permafrost_c, not new
             static_c[ biome ] = static_c.at( biome ) + thawedp_delta*wt_pf*(static_c.at( biome )/thawed_permafrost_c.at( biome ));
         }
+
+        std::cout << "static c in stashCValues: " << static_c.at(biome).value(U_PGC) << std::endl;
+        std::cout << "thawed c in stashCValues: " << thawed_permafrost_c.at(biome).value(U_PGC) << std::endl;
+        std::cout << "new thaw c in stashCValues: " << thawedp_delta.value(U_PGC) << std::endl;
         veg_c[ biome ]      = veg_c.at( biome ) + veg_delta * wt;
         detritus_c[ biome ] = detritus_c.at( biome ) + det_delta * wt;
         soil_c[ biome ]     = soil_c.at( biome ) + soil_delta * wt;
@@ -1153,6 +1167,7 @@ unitval SimpleNbox::rh_fsa( std::string biome ) const
  */
 unitval SimpleNbox::rh_ftpa_co2( std::string biome ) const
 {
+  //std::cout << "static c in rh_ftpa_co2: " << static_c.at(biome).value(U_PGC) << std::endl;
   unitval tpflux( (thawed_permafrost_c.at( biome ).value( U_PGC ) - static_c.at(biome).value(U_PGC))* 0.02, U_PGC_YR );
   //unitval tpflux( thawed_permafrost_c.at( biome ).value( U_PGC ) * 0.02, U_PGC_YR );
   return tpflux * tempferts.at( biome ) * (1.0 - rh_ch4_frac.at( biome ));
@@ -1166,6 +1181,7 @@ unitval SimpleNbox::rh_ftpa_ch4( std::string biome ) const
 {
   // This behaves exactly like the soil pool above
   //unitval tpflux( thawed_permafrost_c.at( biome ).value( U_PGC ) * ( 1 - fpf_static.at( biome ) ) * 0.02, U_PGC_YR );
+  //std::cout << "static c in rh_ftpa_ch4: " << static_c.at(biome).value(U_PGC) << std::endl;
   unitval tpflux( (thawed_permafrost_c.at( biome ).value( U_PGC ) - static_c.at(biome).value(U_PGC))* 0.02, U_PGC_YR );
   //unitval tpflux( thawed_permafrost_c.at( biome ).value( U_PGC )  * 0.02, U_PGC_YR );
   return tpflux * tempferts.at( biome ) * rh_ch4_frac.at( biome );
@@ -1314,8 +1330,8 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
         // Sum permafrost thaw in all biomes
         for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
             std::string biome = *it;
-            
-            //TODO put fpf_static in separate pool (pf should have 3 pools: fast, slow, static. Until then, use f_frozen to calculate pf remaining 
+
+            //TODO put fpf_static in separate pool (pf should have 3 pools: fast, slow, static. Until then, use f_frozen to calculate pf remaining
             //static_c[ biome ] = unitval(static_c.at(biome).value(U_PGC) + permafrost_c.at(biome).value( U_PGC ) *
             //    new_thaw.at(biome) * fpf_static.at(biome), U_PGC);
             //double biome_c_thaw = permafrost_c.at(biome).value( U_PGC ) *
