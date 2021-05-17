@@ -1140,7 +1140,7 @@ unitval SimpleNbox::rh_fsa( std::string biome ) const
  */
 unitval SimpleNbox::rh_ftpa_co2( std::string biome ) const
 {
-  unitval tpflux( thawed_permafrost_c.at( biome ).value( U_PGC ) * ( 1 - fpf_static.at( biome ) ) * 0.02, U_PGC_YR );
+  unitval tpflux( thawed_permafrost_c.at( biome ).value( U_PGC ) * 0.02, U_PGC_YR );
   return tpflux * tempferts.at( biome ) * (1.0 - rh_ch4_frac.at( biome ));
 }
 
@@ -1151,7 +1151,7 @@ unitval SimpleNbox::rh_ftpa_co2( std::string biome ) const
 unitval SimpleNbox::rh_ftpa_ch4( std::string biome ) const
 {
   // This behaves exactly like the soil pool above
-  unitval tpflux( thawed_permafrost_c.at( biome ).value( U_PGC ) * ( 1 - fpf_static.at( biome ) ) * 0.02, U_PGC_YR );
+  unitval tpflux( thawed_permafrost_c.at( biome ).value( U_PGC ) * 0.02, U_PGC_YR );
   return tpflux * tempferts.at( biome ) * rh_ch4_frac.at( biome );
 }
 
@@ -1298,10 +1298,10 @@ int SimpleNbox::calcderivs( double t, const double c[], double dcdt[] ) const
         // Sum permafrost thaw in all biomes
         for( auto it = biome_list.begin(); it != biome_list.end(); it++ ) {
             std::string biome = *it;
-            //double biome_c_thaw = permafrost_c.at(biome).value( U_PGC ) *
-            //    new_thaw.at(biome) * (1 - fpf_static.at( biome ));
             double biome_c_thaw = permafrost_c.at(biome).value( U_PGC ) *
-                new_thaw.at(biome);
+                new_thaw.at(biome) * (1 - fpf_static.at( biome ));
+            //double biome_c_thaw = permafrost_c.at(biome).value( U_PGC ) *
+            //    new_thaw.at(biome);
 
             if(biome_c_thaw >= 0) {
               permafrost_thaw_c = permafrost_thaw_c + unitval( biome_c_thaw, U_PGC_YR );
